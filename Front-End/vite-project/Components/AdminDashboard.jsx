@@ -25,7 +25,21 @@ const AdminDashboard = ({ onLogout }) => {
     enrollmentNumber: "",
     motherName: "",
     course: "",
-    year: ""
+    year: "",
+    // LC related fields
+    branch: "",
+    classAndYear: "",
+    religion: "",
+    caste: "",
+    nationality: "",
+    placeOfBirth: "",
+    dateOfBirth: "",
+    instituteLastAttended: "",
+    dateOfAdmission: "",
+    conduct: "",
+    reasonForLeaving: "",
+    remarks: "",
+    dateOfLeaving: ""
   });
 
   const [showCertificateModal, setShowCertificateModal] = useState(false);
@@ -126,7 +140,30 @@ const AdminDashboard = ({ onLogout }) => {
       enrollmentNumber: student.enrollmentNumber,
       motherName: student.motherName,
       course: student.course,
-      year: student.year
+      year: student.year,
+      branch: student.branch || student.course || "",
+      classAndYear: student.classAndYear || student.year || "",
+      religion: student.religion || student.personalDetails?.religion || "",
+      caste: student.caste || student.personalDetails?.caste || "",
+      nationality: student.nationality || student.personalDetails?.nationality || "",
+      placeOfBirth: student.placeOfBirth || student.personalDetails?.placeOfBirth || "",
+      dateOfBirth: student.dateOfBirth
+        ? new Date(student.dateOfBirth).toISOString().split("T")[0]
+        : (student.personalDetails?.dateOfBirth
+            ? new Date(student.personalDetails.dateOfBirth).toISOString().split("T")[0]
+            : ""),
+      instituteLastAttended: student.instituteLastAttended || student.personalDetails?.instituteLastAttended || "",
+      dateOfAdmission: student.dateOfAdmission
+        ? new Date(student.dateOfAdmission).toISOString().split("T")[0]
+        : (student.personalDetails?.dateOfAdmission
+            ? new Date(student.personalDetails.dateOfAdmission).toISOString().split("T")[0]
+            : ""),
+      conduct: student.personalDetails?.conduct || "",
+      reasonForLeaving: student.personalDetails?.reasonForLeaving || "",
+      remarks: student.personalDetails?.remarks || "",
+      dateOfLeaving: student.personalDetails?.dateOfLeaving
+        ? new Date(student.personalDetails.dateOfLeaving).toISOString().split("T")[0]
+        : ""
     });
     setShowAddForm(true);
   };
@@ -214,13 +251,39 @@ const AdminDashboard = ({ onLogout }) => {
       
       const method = editingStudent ? 'PUT' : 'POST';
 
+      // Prepare payload with top-level and personalDetails mapping
+      const payload = {
+        name: newStudent.name,
+        email: newStudent.email,
+        enrollmentNumber: newStudent.enrollmentNumber,
+        motherName: newStudent.motherName,
+        course: newStudent.course,
+        year: newStudent.year,
+        // These will be respected on PUT; on POST backend currently ignores them but harmless to include
+        branch: newStudent.branch || undefined,
+        classAndYear: newStudent.classAndYear || undefined,
+        personalDetails: {
+          religion: newStudent.religion || undefined,
+          caste: newStudent.caste || undefined,
+          nationality: newStudent.nationality || undefined,
+          placeOfBirth: newStudent.placeOfBirth || undefined,
+          dateOfBirth: newStudent.dateOfBirth || undefined,
+          instituteLastAttended: newStudent.instituteLastAttended || undefined,
+          dateOfAdmission: newStudent.dateOfAdmission || undefined,
+          conduct: newStudent.conduct || undefined,
+          reasonForLeaving: newStudent.reasonForLeaving || undefined,
+          remarks: newStudent.remarks || undefined,
+          dateOfLeaving: newStudent.dateOfLeaving || undefined
+        }
+      };
+
       const response = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newStudent)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
@@ -232,7 +295,20 @@ const AdminDashboard = ({ onLogout }) => {
           enrollmentNumber: "",
           motherName: "",
           course: "",
-          year: ""
+          year: "",
+          branch: "",
+          classAndYear: "",
+          religion: "",
+          caste: "",
+          nationality: "",
+          placeOfBirth: "",
+          dateOfBirth: "",
+          instituteLastAttended: "",
+          dateOfAdmission: "",
+          conduct: "",
+          reasonForLeaving: "",
+          remarks: "",
+          dateOfLeaving: ""
         });
         fetchStudents();
         fetchStats();
@@ -377,7 +453,20 @@ const AdminDashboard = ({ onLogout }) => {
                 enrollmentNumber: "",
                 motherName: "",
                 course: "",
-                year: ""
+                year: "",
+                branch: "",
+                classAndYear: "",
+                religion: "",
+                caste: "",
+                nationality: "",
+                placeOfBirth: "",
+                dateOfBirth: "",
+                instituteLastAttended: "",
+                dateOfAdmission: "",
+                conduct: "",
+                reasonForLeaving: "",
+                remarks: "",
+                dateOfLeaving: ""
               });
             }}
             className="bg-[#059669] hover:bg-[#047857] hover:shadow-[#34d399]/40 text-white px-5 py-2 rounded-lg transition-transform duration-200 hover:-translate-y-0.5"
@@ -474,6 +563,143 @@ const AdminDashboard = ({ onLogout }) => {
                   <option value="2025">2025</option>
                   <option value="2026">2026</option>
                 </select>
+              </div>
+
+              {/* LC Fields */}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Branch</label>
+                <input
+                  type="text"
+                  value={newStudent.branch}
+                  onChange={(e) => setNewStudent({...newStudent, branch: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Class and Year</label>
+                <input
+                  type="text"
+                  value={newStudent.classAndYear}
+                  onChange={(e) => setNewStudent({...newStudent, classAndYear: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Religion</label>
+                <input
+                  type="text"
+                  value={newStudent.religion}
+                  onChange={(e) => setNewStudent({...newStudent, religion: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Caste</label>
+                <input
+                  type="text"
+                  value={newStudent.caste}
+                  onChange={(e) => setNewStudent({...newStudent, caste: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Nationality</label>
+                <input
+                  type="text"
+                  value={newStudent.nationality}
+                  onChange={(e) => setNewStudent({...newStudent, nationality: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Place of Birth</label>
+                <input
+                  type="text"
+                  value={newStudent.placeOfBirth}
+                  onChange={(e) => setNewStudent({...newStudent, placeOfBirth: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth</label>
+                <input
+                  type="date"
+                  value={newStudent.dateOfBirth}
+                  onChange={(e) => setNewStudent({...newStudent, dateOfBirth: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Institute Last Attended</label>
+                <input
+                  type="text"
+                  value={newStudent.instituteLastAttended}
+                  onChange={(e) => setNewStudent({...newStudent, instituteLastAttended: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Date of Admission</label>
+                <input
+                  type="date"
+                  value={newStudent.dateOfAdmission}
+                  onChange={(e) => setNewStudent({...newStudent, dateOfAdmission: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Conduct</label>
+                <select
+                  value={newStudent.conduct}
+                  onChange={(e) => setNewStudent({...newStudent, conduct: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                >
+                  <option value="">Select Conduct</option>
+                  <option value="Excellent">Excellent</option>
+                  <option value="Very Good">Very Good</option>
+                  <option value="Good">Good</option>
+                  <option value="Satisfactory">Satisfactory</option>
+                  <option value="Poor">Poor</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Reason for Leaving</label>
+                <input
+                  type="text"
+                  value={newStudent.reasonForLeaving}
+                  onChange={(e) => setNewStudent({...newStudent, reasonForLeaving: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-600 mb-1">Remarks</label>
+                <textarea
+                  rows={3}
+                  value={newStudent.remarks}
+                  onChange={(e) => setNewStudent({...newStudent, remarks: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Date of Leaving</label>
+                <input
+                  type="date"
+                  value={newStudent.dateOfLeaving}
+                  onChange={(e) => setNewStudent({...newStudent, dateOfLeaving: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
+                />
               </div>
               
               <div className="md:col-span-2 flex gap-2">

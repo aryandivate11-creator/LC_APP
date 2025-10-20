@@ -145,7 +145,8 @@ const Student = ({ onLogout }) => {
               </span>
             </motion.div>
 
-            {/* Certificate Overview */}
+            {/* Certificate Overview */
+            }
             <motion.section
               className="mt-8 backdrop-blur-md bg-white/70 shadow-lg rounded-xl p-6 border border-white/30"
               initial={{ opacity: 0, y: 40 }}
@@ -158,23 +159,31 @@ const Student = ({ onLogout }) => {
 
               {studentData.student.status === 'approved' ? (
                 <>
-                  <div className="bg-teal-50 p-4 rounded-md text-gray-700 space-y-1">
-                    <p>
-                      <span className="font-semibold">Name:</span> {studentData.student.name}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Mother:</span> {studentData.student.motherName}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Course:</span> {studentData.student.course}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Year:</span> {studentData.student.year}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Enrollment:</span> {studentData.student.enrollmentNumber}
-                    </p>
-                  </div>
+                  {(() => {
+                    const pd = studentData.student.personalDetails || {};
+                    return (
+                      <div className="bg-teal-50 p-4 rounded-md text-gray-700 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <p><span className="font-semibold">Name:</span> {studentData.student.name}</p>
+                        <p><span className="font-semibold">Mother's Name:</span> {studentData.student.motherName}</p>
+                        <p><span className="font-semibold">Enrollment Number:</span> {studentData.student.enrollmentNumber}</p>
+                        <p><span className="font-semibold">Course:</span> {studentData.student.course}</p>
+                        <p><span className="font-semibold">Year:</span> {studentData.student.year}</p>
+                        <p><span className="font-semibold">Branch:</span> {studentData.student.branch || '-'}</p>
+                        <p><span className="font-semibold">Class and Year:</span> {studentData.student.classAndYear || '-'}</p>
+                        <p><span className="font-semibold">Religion:</span> {pd.religion || '-'}</p>
+                        <p><span className="font-semibold">Caste:</span> {pd.caste || '-'}</p>
+                        <p><span className="font-semibold">Nationality:</span> {pd.nationality || '-'}</p>
+                        <p><span className="font-semibold">Place of Birth:</span> {pd.placeOfBirth || '-'}</p>
+                        <p><span className="font-semibold">Date of Birth:</span> {pd.dateOfBirth ? new Date(pd.dateOfBirth).toLocaleDateString() : '-'}</p>
+                        <p><span className="font-semibold">Institute Last Attended:</span> {pd.instituteLastAttended || '-'}</p>
+                        <p><span className="font-semibold">Date of Admission:</span> {pd.dateOfAdmission ? new Date(pd.dateOfAdmission).toLocaleDateString() : '-'}</p>
+                        <p><span className="font-semibold">Conduct:</span> {pd.conduct || '-'}</p>
+                        <p><span className="font-semibold">Reason for Leaving:</span> {pd.reasonForLeaving || '-'}</p>
+                        <p className="md:col-span-2"><span className="font-semibold">Remarks:</span> {pd.remarks || '-'}</p>
+                        <p><span className="font-semibold">Date of Leaving:</span> {pd.dateOfLeaving ? new Date(pd.dateOfLeaving).toLocaleDateString() : '-'}</p>
+                      </div>
+                    );
+                  })()}
 
                   <p className="mt-4 text-sm text-gray-600">
                     Created: {new Date(studentData.certificate.createdAt).toLocaleDateString()}
