@@ -24,7 +24,7 @@ const AdminDashboard = ({ onLogout }) => {
     email: "",
     enrollmentNumber: "",
     motherName: "",
-    course: "",
+    motherTongue: "Gujarati",
     year: "",
     // LC related fields
     branch: "",
@@ -44,6 +44,7 @@ const AdminDashboard = ({ onLogout }) => {
 
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showPage, setShowPage] = useState(null);
 
   // Fetch students from API
   const fetchStudents = async () => {
@@ -139,9 +140,9 @@ const AdminDashboard = ({ onLogout }) => {
       email: student.email,
       enrollmentNumber: student.enrollmentNumber,
       motherName: student.motherName,
-      course: student.course,
+      motherTongue: student.motherTongue || student.personalDetails?.motherTongue || "Gujarati",
       year: student.year,
-      branch: student.branch || student.course || "",
+      branch: student.branch || "",
       classAndYear: student.classAndYear || student.year || "",
       religion: student.religion || student.personalDetails?.religion || "",
       caste: student.caste || student.personalDetails?.caste || "",
@@ -257,7 +258,7 @@ const AdminDashboard = ({ onLogout }) => {
         email: newStudent.email,
         enrollmentNumber: newStudent.enrollmentNumber,
         motherName: newStudent.motherName,
-        course: newStudent.course,
+        motherTongue: newStudent.motherTongue,
         year: newStudent.year,
         // These will be respected on PUT; on POST backend currently ignores them but harmless to include
         branch: newStudent.branch || undefined,
@@ -265,6 +266,7 @@ const AdminDashboard = ({ onLogout }) => {
         personalDetails: {
           religion: newStudent.religion || undefined,
           caste: newStudent.caste || undefined,
+          motherTongue: newStudent.motherTongue || undefined,
           nationality: newStudent.nationality || undefined,
           placeOfBirth: newStudent.placeOfBirth || undefined,
           dateOfBirth: newStudent.dateOfBirth || undefined,
@@ -294,7 +296,7 @@ const AdminDashboard = ({ onLogout }) => {
           email: "",
           enrollmentNumber: "",
           motherName: "",
-          course: "",
+          motherTongue: "Gujarati",
           year: "",
           branch: "",
           classAndYear: "",
@@ -333,15 +335,18 @@ const AdminDashboard = ({ onLogout }) => {
 
           {/* Links */}
           <ul className="flex space-x-8 text-lg">
-            {["Home", "Help", "About", "Contact"].map((item, i) => (
+            {["Help", "About", "Contact"].map((item, i) => (
               <li key={i}>
-                <a
-                  href={`#${item.toLowerCase()}`}
-                  className="relative hover:text-[#a7f3d0] transition-colors duration-300 group"
+                <button
+                  onClick={() => {
+                    // This will be handled by modal state
+                    setShowPage(item.toLowerCase());
+                  }}
+                  className="relative hover:text-[#a7f3d0] transition-colors duration-300 group cursor-pointer"
                 >
                   {item}
                   <span className="absolute left-0 bottom-[-5px] w-0 h-[2px] bg-white transition-all duration-300 group-hover:w-full"></span>
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -452,7 +457,7 @@ const AdminDashboard = ({ onLogout }) => {
                 email: "",
                 enrollmentNumber: "",
                 motherName: "",
-                course: "",
+                motherTongue: "Gujarati",
                 year: "",
                 branch: "",
                 classAndYear: "",
@@ -539,14 +544,26 @@ const AdminDashboard = ({ onLogout }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Course</label>
-                <input
-                  type="text"
-                  value={newStudent.course}
-                  onChange={(e) => setNewStudent({...newStudent, course: e.target.value})}
+                <label className="block text-sm font-medium text-gray-600 mb-1">Mother Tongue</label>
+                <select
+                  value={newStudent.motherTongue}
+                  onChange={(e) => setNewStudent({...newStudent, motherTongue: e.target.value})}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
-                />
+                >
+                  <option value="Gujarati">Gujarati</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="English">English</option>
+                  <option value="Bengali">Bengali</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Kannada">Kannada</option>
+                  <option value="Malayalam">Malayalam</option>
+                  <option value="Punjabi">Punjabi</option>
+                  <option value="Urdu">Urdu</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
               
               <div>
@@ -824,6 +841,132 @@ const AdminDashboard = ({ onLogout }) => {
           onClose={handleCloseCertificateModal}
           onSave={handleSaveCertificate}
         />
+      )}
+
+      {/* Help/About/Contact Modal */}
+      {showPage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <motion.div
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
+                <button
+                  onClick={() => setShowPage(null)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="text-gray-700 space-y-4">
+                {showPage === 'help' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">Help & Support</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Getting Started</h4>
+                        <p>Welcome to the Leaving Certificate Management System. Use this portal to manage student certificates efficiently.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">How to Add a Student</h4>
+                        <p>Click the "Add Student" button, fill in all required fields including Mother Tongue, and click "Add Student" to save.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Generating Certificates</h4>
+                        <p>Once a student is approved, click "Generate LC" to create their leaving certificate. You can then print or download it as PDF.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Managing Students</h4>
+                        <p>Use the Edit button to modify student information, or the Delete button to remove a student record.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Need More Help?</h4>
+                        <p>For additional assistance, please contact the administrator or refer to the About section for more information.</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {showPage === 'about' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">About the System</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Leaving Certificate Management System</h4>
+                        <p>A comprehensive digital solution for managing leaving certificates at Government Polytechnic Mumbai.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Features</h4>
+                        <ul className="list-disc list-inside space-y-1 ml-2">
+                          <li>Student registration and management</li>
+                          <li>Certificate generation and tracking</li>
+                          <li>Print and PDF download functionality</li>
+                          <li>Secure admin and student portals</li>
+                          <li>Real-time status updates</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Institution</h4>
+                        <p><strong>Government Polytechnic Mumbai</strong></p>
+                        <p>49, KHERWADI, ALI YAWAK JUNG MARG, BANDRA (EAST), MUMBAI-400 051</p>
+                        <p className="mt-1">(Autonomous status granted by Govt. of Maharashtra)</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Version</h4>
+                        <p>Version 1.0.0 - Last Updated: 2024</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {showPage === 'contact' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">Contact Information</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Administrative Office</h4>
+                        <p><strong>Address:</strong><br />
+                        49, KHERWADI, ALI YAWAK JUNG MARG<br />
+                        BANDRA (EAST), MUMBAI-400 051<br />
+                        Maharashtra, India</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Contact Details</h4>
+                        <p><strong>Phone:</strong> +91-XX-XXXX-XXXX</p>
+                        <p><strong>Email:</strong> admin@gpmumbai.ac.in</p>
+                        <p><strong>Website:</strong> www.gpmumbai.ac.in</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Office Hours</h4>
+                        <p>Monday to Friday: 9:00 AM - 5:00 PM<br />
+                        Saturday: 9:00 AM - 1:00 PM<br />
+                        Sunday: Closed</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Support</h4>
+                        <p>For technical support or queries related to the Leaving Certificate Management System, please contact the system administrator or visit the administrative office during office hours.</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowPage(null)}
+                  className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       )}
     </div>
   );

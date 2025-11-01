@@ -34,9 +34,13 @@ const studentSchema = new mongoose.Schema({
   },
   course: {
     type: String,
-    required: [true, 'Course is required'],
     trim: true,
     uppercase: true
+  },
+  motherTongue: {
+    type: String,
+    trim: true,
+    default: 'Gujarati'
   },
   year: {
     type: String,

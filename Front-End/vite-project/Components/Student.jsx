@@ -6,6 +6,7 @@ const Student = ({ onLogout }) => {
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPage, setShowPage] = useState(null);
 
   const API_BASE_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
@@ -55,16 +56,17 @@ const Student = ({ onLogout }) => {
 
           {/* Center: Navigation Links */}
           <div className="hidden md:flex gap-8 text-gray-700 font-medium">
-            {["Home", "Help", "About", "Contact"].map((item) => (
-              <div
+            {["Help", "About", "Contact"].map((item) => (
+              <button
                 key={item}
+                onClick={() => setShowPage(item.toLowerCase())}
                 className="relative group cursor-pointer transition duration-300"
               >
                 <span className="hover:text-teal-600 transition duration-300">
                   {item}
                 </span>
                 <span className="absolute left-0 bottom-[-4px] w-0 h-[2px] bg-teal-500 transition-all duration-300 group-hover:w-full"></span>
-              </div>
+              </button>
             ))}
           </div>
 
@@ -220,6 +222,113 @@ const Student = ({ onLogout }) => {
           </div>
         )}
       </main>
+
+      {/* Help/About/Contact Modal */}
+      {showPage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <motion.div
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
+                <button
+                  onClick={() => setShowPage(null)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="text-gray-700 space-y-4">
+                {showPage === 'help' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">Help & Support</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Student Portal Guide</h4>
+                        <p>Welcome to your student portal. Here you can view your certificate status and information.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Viewing Your Certificate</h4>
+                        <p>Once your application is approved by the admin, you can view all your certificate details in the Certificate Overview section.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Certificate Status</h4>
+                        <p>Your certificate status can be either "Pending" (under review) or "Approved" (ready to view).</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Need Assistance?</h4>
+                        <p>If you have any questions or need help, please contact the administrative office or refer to the Contact section.</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {showPage === 'about' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">About</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Government Polytechnic Mumbai</h4>
+                        <p>An autonomous institute under the Government of Maharashtra, dedicated to providing quality technical education.</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Address</h4>
+                        <p>49, KHERWADI, ALI YAWAK JUNG MARG<br />
+                        BANDRA (EAST), MUMBAI-400 051</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Leaving Certificate System</h4>
+                        <p>This digital platform allows students to register, track, and receive their leaving certificates online, making the process efficient and transparent.</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {showPage === 'contact' && (
+                  <>
+                    <h3 className="text-xl font-semibold text-teal-700 mb-2">Contact Information</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold">Administrative Office</h4>
+                        <p><strong>Address:</strong><br />
+                        49, KHERWADI, ALI YAWAK JUNG MARG<br />
+                        BANDRA (EAST), MUMBAI-400 051<br />
+                        Maharashtra, India</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Contact Details</h4>
+                        <p><strong>Phone:</strong> +91-XX-XXXX-XXXX</p>
+                        <p><strong>Email:</strong> admin@gpmumbai.ac.in</p>
+                        <p><strong>Website:</strong> www.gpmumbai.ac.in</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">Office Hours</h4>
+                        <p>Monday to Friday: 9:00 AM - 5:00 PM<br />
+                        Saturday: 9:00 AM - 1:00 PM<br />
+                        Sunday: Closed</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowPage(null)}
+                  className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

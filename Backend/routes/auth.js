@@ -26,7 +26,7 @@ router.post('/student/signup', [
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('enrollmentNumber').notEmpty().withMessage('Enrollment number is required'),
   body('motherName').notEmpty().withMessage('Mother name is required'),
-  body('course').notEmpty().withMessage('Course is required'),
+  body('motherTongue').notEmpty().withMessage('Mother tongue is required'),
   body('year').notEmpty().withMessage('Year is required'),
   body('religion').optional(),
   body('caste').optional(),
@@ -36,7 +36,8 @@ router.post('/student/signup', [
   body('instituteLastAttended').optional(),
   body('dateOfAdmission').optional(),
   body('branch').optional(),
-  body('classAndYear').optional()
+  body('classAndYear').optional(),
+  body('course').optional()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -47,7 +48,7 @@ router.post('/student/signup', [
       });
     }
 
-    const { name, email, password, enrollmentNumber, motherName, course, year, religion, caste, nationality, placeOfBirth, dateOfBirth, instituteLastAttended, dateOfAdmission, branch, classAndYear } = req.body;
+    const { name, email, password, enrollmentNumber, motherName, motherTongue, course, year, religion, caste, nationality, placeOfBirth, dateOfBirth, instituteLastAttended, dateOfAdmission, branch, classAndYear } = req.body;
 
     // Check if student already exists
     const existingStudent = await Student.findOne({
@@ -67,7 +68,8 @@ router.post('/student/signup', [
       password,
       enrollmentNumber,
       motherName,
-      course,
+      motherTongue: motherTongue || 'Gujarati',
+      course: course || '',
       year,
       religion: religion || 'Hindu',
       caste: caste || 'OBC',
@@ -76,11 +78,12 @@ router.post('/student/signup', [
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
       instituteLastAttended: instituteLastAttended || 'ABC High School, Mumbai',
       dateOfAdmission: dateOfAdmission ? new Date(dateOfAdmission) : new Date(),
-      branch: branch || course,
+      branch: branch || '',
       classAndYear: classAndYear || year,
       personalDetails: {
         religion: religion || 'Hindu',
         caste: caste || 'OBC',
+        motherTongue: motherTongue || 'Gujarati',
         nationality: nationality || 'Indian',
         placeOfBirth: placeOfBirth || 'Mumbai',
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
@@ -248,6 +251,90 @@ router.get('/verify', async (req, res) => {
     res.status(400).json({ message: 'Invalid token' });
   } catch (error) {
     res.status(400).json({ message: 'Invalid token' });
+  }
+});
+
+// Forgot Password - Request Reset
+router.post('/forgot-password', [
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('enrollmentNumber').optional()
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { email, enrollmentNumber } = req.body;
+    
+    // Find student by email or enrollment number
+    let student;
+    if (enrollmentNumber) {
+      student = await Student.findOne({ enrollmentNumber });
+    } else {
+      student = await Student.findOne({ email });
+    }
+
+    if (!student) {
+      // Don't reveal if email exists for security
+      return res.json({ 
+        message: 'If the email exists, a password reset link has been sent.' 
+      });
+    }
+
+    // In a real application, you would:
+    // 1. Generate a reset token
+    // 2. Send an email with reset link
+    // 3. Store token in database with expiration
+    
+    // For now, return a message that admin needs to reset password
+    // In production, implement email service (nodemailer, etc.)
+    res.json({
+      message: 'Password reset requested. Please contact the administrator to reset your password. ' +
+               'Contact: admin@gpmumbai.ac.in or visit the administrative office.'
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Reset Password (Admin only - in production, this would use a secure token)
+router.post('/reset-password', [
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { email, newPassword } = req.body;
+    
+    const student = await Student.findOne({ email });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    // Update password (will be hashed by pre-save hook)
+    student.password = newPassword;
+    await student.save();
+
+    res.json({
+      message: 'Password reset successfully'
+    });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

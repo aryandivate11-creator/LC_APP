@@ -9,17 +9,17 @@ export default function LoginPage({ onLogin }) {
     name: "",
     enrollmentNumber: "",
     motherName: "",
-    course: "",
-    year: "",
-    religion: "Hindu",
+    motherTongue: "Marathi",   // was empty
+    year: "Third",              // was empty
+    religion: "",
     caste: "",
     nationality: "Indian",
     placeOfBirth: "",
     dateOfBirth: "",
-    instituteLastAttended: "",
+    instituteLastAttended: "Government Polytechnic Mumbai",
     dateOfAdmission: "",
     branch: "",
-    classAndYear: ""
+    classAndYear: "Third "
   });
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -354,6 +354,30 @@ export default function LoginPage({ onLogin }) {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-600">Mother Tongue</label>
+                <select
+                  name="motherTongue"
+                  value={formData.motherTongue}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                >
+                  <option value="Gujarati">Gujarati</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="English">English</option>
+                  <option value="Bengali">Bengali</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Kannada">Kannada</option>
+                  <option value="Malayalam">Malayalam</option>
+                  <option value="Punjabi">Punjabi</option>
+                  <option value="Urdu">Urdu</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-600">Branch</label>
                 <input
                   type="text"
@@ -361,7 +385,6 @@ export default function LoginPage({ onLogin }) {
                   placeholder="e.g., Diploma in Information Technology"
                   value={formData.branch}
                   onChange={handleInputChange}
-                  required
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none"
                 />
               </div>
@@ -374,7 +397,6 @@ export default function LoginPage({ onLogin }) {
                   placeholder="e.g., Third Year, Second Year"
                   value={formData.classAndYear}
                   onChange={handleInputChange}
-                  required
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 outline-none"
                 />
               </div>
@@ -421,14 +443,35 @@ export default function LoginPage({ onLogin }) {
             )}
           </button>
 
-          <div className="text-center">
-            <a
-              href="#"
-              className="text-sm text-emerald-600 hover:underline"
-            >
-              Forgot Password?
-            </a>
-          </div>
+          {activeTab === "student" && !isSignup && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={async () => {
+                  setError("");
+                  const email = prompt("Enter your email address:");
+                  if (email) {
+                    try {
+                      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email }),
+                      });
+                      const data = await response.json();
+                      alert(data.message || "Password reset instructions sent to your email.");
+                    } catch (error) {
+                      alert("Error: Please contact admin for password reset.");
+                    }
+                  }
+                }}
+                className="text-sm text-emerald-600 hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
+          )}
         </form>
 
         <p className="text-gray-400 text-xs text-center mt-6">

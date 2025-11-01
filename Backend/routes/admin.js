@@ -74,8 +74,9 @@ router.post('/students', verifyAdminToken, [
   body('email').isEmail().withMessage('Valid email is required'),
   body('enrollmentNumber').notEmpty().withMessage('Enrollment number is required'),
   body('motherName').notEmpty().withMessage('Mother name is required'),
-  body('course').notEmpty().withMessage('Course is required'),
-  body('year').notEmpty().withMessage('Year is required')
+  body('motherTongue').notEmpty().withMessage('Mother tongue is required'),
+  body('year').notEmpty().withMessage('Year is required'),
+  body('course').optional()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -86,7 +87,7 @@ router.post('/students', verifyAdminToken, [
       });
     }
 
-    const { name, email, enrollmentNumber, motherName, course, year, personalDetails } = req.body;
+    const { name, email, enrollmentNumber, motherName, motherTongue, course, year, personalDetails } = req.body;
 
     // Check if student already exists
     const existingStudent = await Student.findOne({
@@ -105,9 +106,13 @@ router.post('/students', verifyAdminToken, [
       email,
       enrollmentNumber,
       motherName,
-      course,
+      motherTongue: motherTongue || 'Gujarati',
+      course: course || '',
       year,
-      personalDetails: personalDetails || {},
+      personalDetails: {
+        ...(personalDetails || {}),
+        motherTongue: motherTongue || personalDetails?.motherTongue || 'Gujarati'
+      },
       status: 'pending',
       password: 'default123' // Default password, student can change later
     });
@@ -137,8 +142,9 @@ router.put('/students/:id', verifyAdminToken, [
   body('email').optional().isEmail().withMessage('Valid email is required'),
   body('enrollmentNumber').optional().notEmpty().withMessage('Enrollment number cannot be empty'),
   body('motherName').optional().notEmpty().withMessage('Mother name cannot be empty'),
-  body('course').optional().notEmpty().withMessage('Course cannot be empty'),
-  body('year').optional().notEmpty().withMessage('Year cannot be empty')
+  body('motherTongue').optional().notEmpty().withMessage('Mother tongue cannot be empty'),
+  body('year').optional().notEmpty().withMessage('Year cannot be empty'),
+  body('course').optional()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -279,8 +285,9 @@ router.post('/students/:id/generate-certificate', verifyAdminToken, [
     // Update basic student info if provided
     if (certificateData.name) student.name = certificateData.name;
     if (certificateData.motherName) student.motherName = certificateData.motherName;
-    if (certificateData.course) student.course = certificateData.branch;
-    if (certificateData.year) student.year = certificateData.classAndYear;
+    if (certificateData.motherTongue) student.motherTongue = certificateData.motherTongue;
+    if (certificateData.branch) student.branch = certificateData.branch;
+    if (certificateData.classAndYear) student.classAndYear = certificateData.classAndYear;
 
     await student.save();
 

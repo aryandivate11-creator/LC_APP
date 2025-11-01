@@ -11,12 +11,13 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
     motherName: student?.motherName || '',
     religion: student?.religion || student?.personalDetails?.religion || 'Hindu',
     caste: student?.caste || student?.personalDetails?.caste || 'OBC',
+    motherTongue: student?.motherTongue || student?.personalDetails?.motherTongue || 'Gujarati',
     nationality: student?.nationality || student?.personalDetails?.nationality || 'Indian',
     placeOfBirth: student?.placeOfBirth || student?.personalDetails?.placeOfBirth || 'Mumbai',
     dateOfBirth: student?.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : (student?.personalDetails?.dateOfBirth ? new Date(student.personalDetails.dateOfBirth).toISOString().split('T')[0] : ''),
     instituteLastAttended: student?.instituteLastAttended || student?.personalDetails?.instituteLastAttended || 'ABC High School, Mumbai',
     dateOfAdmission: student?.dateOfAdmission ? new Date(student.dateOfAdmission).toISOString().split('T')[0] : (student?.personalDetails?.dateOfAdmission ? new Date(student.personalDetails.dateOfAdmission).toISOString().split('T')[0] : ''),
-    branch: student?.branch || student?.course || 'Diploma in Information Technology',
+    branch: student?.branch || 'Diploma in Information Technology',
     classAndYear: student?.classAndYear || student?.year || 'Third Year',
     conduct: student?.personalDetails?.conduct || 'Very Good',
     reasonForLeaving: student?.personalDetails?.reasonForLeaving || 'Completion of Course',
@@ -103,19 +104,110 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
   };
 
   const handlePrint = () => {
-    window.print();
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    const printContent = document.querySelector('.certificate-print');
+    
+    if (printWindow && printContent) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Leaving Certificate - Print</title>
+            <style>
+              @media print {
+                body { margin: 0; padding: 0; }
+                .no-print { display: none; }
+              }
+              body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                background: white;
+              }
+            </style>
+            <link rel="stylesheet" href="/src/print.css">
+          </head>
+          <body>
+            ${printContent.outerHTML}
+            <div class="no-print" style="text-align: center; margin-top: 20px;">
+              <button onclick="window.print()" style="padding: 10px 20px; background: #0d9488; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🖨️ Print</button>
+              <button onclick="window.close()" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Close</button>
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      
+      // Wait for content to load, then show print dialog
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print();
+        }, 250);
+      };
+    } else {
+      // Fallback to regular print
+      window.print();
+    }
   };
 
   const handleDownloadPDF = async () => {
     try {
       const element = document.querySelector('.certificate-print');
-      if (!element) return;
+      if (!element) {
+        alert('Certificate content not found. Please generate the certificate first.');
+        return;
+      }
+
+      // Create a new window to show download progress
+      const downloadWindow = window.open('', '_blank');
+      if (downloadWindow) {
+        downloadWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Downloading Certificate...</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  height: 100vh;
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: white;
+                }
+                .spinner {
+                  border: 4px solid rgba(255,255,255,0.3);
+                  border-radius: 50%;
+                  border-top: 4px solid white;
+                  width: 50px;
+                  height: 50px;
+                  animation: spin 1s linear infinite;
+                  margin-bottom: 20px;
+                }
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="spinner"></div>
+              <h2>Generating PDF...</h2>
+              <p>Please wait while we prepare your certificate for download.</p>
+            </body>
+          </html>
+        `);
+        downloadWindow.document.close();
+      }
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false
       });
 
       const imgData = canvas.toDataURL('image/png');
@@ -139,6 +231,10 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
       }
 
       pdf.save(`Leaving_Certificate_${certificateData.enrollmentNumber}.pdf`);
+      
+      if (downloadWindow) {
+        downloadWindow.close();
+      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
@@ -188,7 +284,7 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
           <p><span className="font-semibold">3. Mother Name:</span> {certificateData.motherName}</p>
           <p><span className="font-semibold">4. Religion:</span> {certificateData.religion}</p>
           <p><span className="font-semibold">5. Caste & SubCaste:</span> {certificateData.caste}</p>
-          <p><span className="font-semibold">6. Mother Tongue:</span> Guju</p>
+          <p><span className="font-semibold">6. Mother Tongue:</span> {certificateData.motherTongue}</p>
           <p><span className="font-semibold">7. Nationality:</span> {certificateData.nationality}</p>
           <p><span className="font-semibold">8. Place of Birth:</span> {certificateData.placeOfBirth}</p>
           <p><span className="font-semibold">9. Date of Birth:</span> {formatDate(certificateData.dateOfBirth)}</p>
@@ -332,6 +428,28 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mother Tongue</label>
+                <select
+                  value={certificateData.motherTongue}
+                  onChange={(e) => handleInputChange('motherTongue', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="Gujarati">Gujarati</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="English">English</option>
+                  <option value="Bengali">Bengali</option>
+                  <option value="Tamil">Tamil</option>
+                  <option value="Telugu">Telugu</option>
+                  <option value="Kannada">Kannada</option>
+                  <option value="Malayalam">Malayalam</option>
+                  <option value="Punjabi">Punjabi</option>
+                  <option value="Urdu">Urdu</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
                 <input
                   type="text"
@@ -466,6 +584,22 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
             >
               {isGenerating ? 'Generating...' : (isEdit ? 'Update Certificate' : 'Generate Certificate')}
             </button>
+            {showPreview && (
+              <>
+                <button
+                  onClick={handlePrint}
+                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+                >
+                  🖨️ Print
+                </button>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg"
+                >
+                  📄 Download PDF
+                </button>
+              </>
+            )}
           </div>
         </div>
       </motion.div>
