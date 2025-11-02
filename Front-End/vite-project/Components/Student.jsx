@@ -7,6 +7,7 @@ const Student = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showPage, setShowPage] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const API_BASE_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
@@ -41,25 +42,28 @@ const Student = ({ onLogout }) => {
     <div className="min-h-screen bg-gradient-to-br from-[#e0f7fa] via-[#f8ffff] to-[#e0f2f1]">
       {/* 🔹 Glass Navbar */}
       <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/40 border-b border-white/30 shadow-md">
-        <div className="flex justify-between items-center px-6 py-3">
+        <div className="flex justify-between items-center px-4 sm:px-6 py-3">
           {/* Left: Logo / Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <img
               src={logo}
               alt="GPM Logo"
-              className="h-10 w-10 rounded-full shadow-md"
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full shadow-md"
             />
-            <h1 className="text-xl font-semibold text-teal-700 tracking-wide">
+            <h1 className="text-lg sm:text-xl font-semibold text-teal-700 tracking-wide">
               Student Portal
             </h1>
           </div>
 
-          {/* Center: Navigation Links */}
-          <div className="hidden md:flex gap-8 text-gray-700 font-medium">
+          {/* Center: Navigation Links - Desktop */}
+          <div className="hidden md:flex gap-6 lg:gap-8 text-gray-700 font-medium text-sm lg:text-base">
             {["Help", "About", "Contact"].map((item) => (
               <button
                 key={item}
-                onClick={() => setShowPage(item.toLowerCase())}
+                onClick={() => {
+                  setShowPage(item.toLowerCase());
+                  setMobileMenuOpen(false);
+                }}
                 className="relative group cursor-pointer transition duration-300"
               >
                 <span className="hover:text-teal-600 transition duration-300">
@@ -70,19 +74,58 @@ const Student = ({ onLogout }) => {
             ))}
           </div>
 
-          {/* Right: Logout */}
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-teal-700 p-2 rounded-lg hover:bg-white/50 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          {/* Right: Logout - Desktop */}
           <button 
             onClick={onLogout}
-            className="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg shadow-md hover:shadow-teal-300/50 transition-all duration-300 hover:-translate-y-0.5"
+            className="hidden sm:block bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md hover:shadow-teal-300/50 transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
           >
             Logout
           </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white/80 backdrop-blur-md border-t border-white/30 px-4 py-3 space-y-2">
+            {["Help", "About", "Contact"].map((item) => (
+              <button
+                key={item}
+                onClick={() => {
+                  setShowPage(item.toLowerCase());
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-3 py-2 rounded-lg hover:bg-teal-50 text-gray-700 transition-colors"
+              >
+                {item}
+              </button>
+            ))}
+            <button
+              onClick={onLogout}
+              className="block w-full text-left px-3 py-2 rounded-lg bg-teal-600 text-white font-semibold hover:bg-teal-700 transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* 🔹 Header Section */}
       <motion.div
-        className="flex flex-col sm:flex-row items-center justify-center py-10"
+        className="flex flex-col sm:flex-row items-center justify-center py-6 sm:py-10 px-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -90,28 +133,28 @@ const Student = ({ onLogout }) => {
         <img
           src={logo}
           alt="Government Polytechnic Mumbai Logo"
-          className="h-36 w-36 rounded-full object-cover shadow-lg mb-4 sm:mb-0"
+          className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 rounded-full object-cover shadow-lg mb-4 sm:mb-0"
         />
-        <div className="text-center sm:text-left sm:ml-6">
-          <h1 className="text-4xl sm:text-5xl text-teal-700 font-bold">
+        <div className="text-center sm:text-left sm:ml-4 md:ml-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-teal-700 font-bold px-2 sm:px-0">
             Government Polytechnic Mumbai
           </h1>
-          <p className="text-2xl sm:text-3xl text-teal-600">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-teal-600 px-2 sm:px-0">
             शासकीय तंत्रनिकेतन मुंबई
           </p>
-          <p className="text-lg text-gray-600">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 px-2 sm:px-0">
             (An autonomous Institute Government of Maharashtra)
           </p>
         </div>
       </motion.div>
 
       {/* 🔹 Page Header (No Button Now) */}
-      <div className="mx-8 mb-8 p-4 bg-teal-600 text-white rounded-xl shadow-lg flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Welcome, Student</h2>
+      <div className="mx-4 sm:mx-6 md:mx-8 mb-6 sm:mb-8 p-3 sm:p-4 bg-teal-600 text-white rounded-xl shadow-lg flex justify-between items-center">
+        <h2 className="text-xl sm:text-2xl font-semibold">Welcome, Student</h2>
       </div>
 
       {/* 🔹 Main Section */}
-      <main className="max-w-3xl mx-auto mt-10 p-6">
+      <main className="max-w-3xl mx-auto mt-6 sm:mt-10 p-4 sm:p-6">
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
@@ -164,7 +207,7 @@ const Student = ({ onLogout }) => {
                   {(() => {
                     const pd = studentData.student.personalDetails || {};
                     return (
-                      <div className="bg-teal-50 p-4 rounded-md text-gray-700 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="bg-teal-50 p-3 sm:p-4 rounded-md text-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-sm sm:text-base">
                         <p><span className="font-semibold">Name:</span> {studentData.student.name}</p>
                         <p><span className="font-semibold">Mother's Name:</span> {studentData.student.motherName}</p>
                         <p><span className="font-semibold">Enrollment Number:</span> {studentData.student.enrollmentNumber}</p>
@@ -225,19 +268,20 @@ const Student = ({ onLogout }) => {
 
       {/* Help/About/Contact Modal */}
       {showPage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-3 sm:p-4">
           <motion.div
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto m-2 sm:m-0"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
                 <button
                   onClick={() => setShowPage(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl p-1"
+                  aria-label="Close"
                 >
                   ×
                 </button>
@@ -320,7 +364,7 @@ const Student = ({ onLogout }) => {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowPage(null)}
-                  className="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200"
+                  className="px-4 sm:px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200 text-sm sm:text-base"
                 >
                   Close
                 </button>

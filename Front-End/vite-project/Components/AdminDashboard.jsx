@@ -45,6 +45,7 @@ const AdminDashboard = ({ onLogout }) => {
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showPage, setShowPage] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch students from API
   const fetchStudents = async () => {
@@ -193,7 +194,7 @@ const AdminDashboard = ({ onLogout }) => {
       issueDate: new Date().toLocaleDateString('en-GB')
     };
 
-    alert('LC generated successfully!');
+    // alert('LC generated successfully!');
 
     const certificateHTML = `
       <div class="certificate-print" style="font-family:'Times New Roman', serif; padding:40px; background:white; max-width:800px; margin:auto; border:2px solid #000;">
@@ -458,20 +459,20 @@ const AdminDashboard = ({ onLogout }) => {
     <div className="min-h-screen bg-gradient-to-br from-white via-[#e6fffa] to-[#ccfbf1] text-gray-800">
       {/* 🌊 Teal Navbar */}
       <nav className="bg-gradient-to-r from-[#0f766e] to-[#0d9488] shadow-lg sticky top-0 z-50 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
           {/* Logo */}
-          <div className="text-2xl font-bold tracking-wide hover:scale-105 transition-transform duration-300">
+          <div className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide hover:scale-105 transition-transform duration-300">
             Admin Portal
           </div>
 
-          {/* Links */}
-          <ul className="flex space-x-8 text-lg">
+          {/* Desktop Links */}
+          <ul className="hidden md:flex space-x-6 lg:space-x-8 text-base lg:text-lg">
             {["Help", "About", "Contact"].map((item, i) => (
               <li key={i}>
                 <button
                   onClick={() => {
-                    // This will be handled by modal state
                     setShowPage(item.toLowerCase());
+                    setMobileMenuOpen(false);
                   }}
                   className="relative hover:text-[#a7f3d0] transition-colors duration-300 group cursor-pointer"
                 >
@@ -482,19 +483,58 @@ const AdminDashboard = ({ onLogout }) => {
             ))}
           </ul>
 
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-white p-2 rounded-lg hover:bg-white/20 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
           {/* Logout Button */}
           <button
             onClick={onLogout}
-            className="bg-white text-[#0f766e] font-semibold px-5 py-2 rounded-lg hover:bg-[#a7f3d0] hover:text-[#064e3b] transition-transform duration-300 hover:-translate-y-0.5 shadow-md"
+            className="hidden sm:block bg-white text-[#0f766e] font-semibold px-4 sm:px-5 py-2 rounded-lg hover:bg-[#a7f3d0] hover:text-[#064e3b] transition-transform duration-300 hover:-translate-y-0.5 shadow-md text-sm sm:text-base"
           >
             Logout
           </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-[#0d9488] border-t border-white/20 px-4 py-3 space-y-2">
+            {["Help", "About", "Contact"].map((item) => (
+              <button
+                key={item}
+                onClick={() => {
+                  setShowPage(item.toLowerCase());
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors"
+              >
+                {item}
+              </button>
+            ))}
+            <button
+              onClick={onLogout}
+              className="block w-full text-left px-3 py-2 rounded-lg bg-white text-[#0f766e] font-semibold hover:bg-[#a7f3d0] transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* 🏛️ Header */}
       <motion.div
-        className="flex flex-col sm:flex-row items-center justify-center py-10"
+        className="flex flex-col sm:flex-row items-center justify-center py-6 sm:py-10 px-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -502,31 +542,31 @@ const AdminDashboard = ({ onLogout }) => {
         <img
           src="/GPM-LOGO-2021.png"
           alt="Logo"
-          className="h-36 w-36 rounded-full object-cover shadow-lg border-2 border-[#0d9488] mb-4 sm:mb-0"
+          className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 rounded-full object-cover shadow-lg border-2 border-[#0d9488] mb-4 sm:mb-0"
         />
-        <div className="text-center sm:text-left sm:ml-6">
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#0f766e]">
+        <div className="text-center sm:text-left sm:ml-4 md:ml-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#0f766e] px-2 sm:px-0">
             Government Polytechnic Mumbai
           </h1>
-          <p className="text-2xl sm:text-3xl text-[#115e59]">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#115e59] px-2 sm:px-0">
             शासकीय तंत्रनिकेतन मुंबई
           </p>
-          <p className="text-lg text-gray-600 italic">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 italic px-2 sm:px-0">
             (An autonomous Institute, Govt. of Maharashtra)
           </p>
         </div>
       </motion.div>
 
       {/* 🧭 Dashboard Header */}
-      <div className="bg-gradient-to-r from-[#0f766e] to-[#0d9488] text-white px-8 py-3 flex justify-between items-center shadow-lg">
-        <h2 className="text-2xl font-semibold">Admin Dashboard</h2>
-        <span className="font-medium">Welcome, Admin</span>
+      <div className="bg-gradient-to-r from-[#0f766e] to-[#0d9488] text-white px-4 sm:px-6 md:px-8 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-lg">
+        <h2 className="text-xl sm:text-2xl font-semibold">Admin Dashboard</h2>
+        <span className="font-medium text-sm sm:text-base">Welcome, Admin</span>
       </div>
 
       {/* 🧾 Main Section */}
-      <main className="p-8">
+      <main className="p-4 sm:p-6 md:p-8">
         {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <motion.div
             className="bg-white p-6 rounded-xl shadow-lg border border-[#0d9488]/20"
             initial={{ opacity: 0, y: 20 }}
@@ -569,12 +609,12 @@ const AdminDashboard = ({ onLogout }) => {
         </div>
 
         {/* Search & Add Section */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex-1">
             <input
               type="text"
               placeholder="Search students..."
-              className="border border-[#0d9488]/40 bg-white text-gray-800 rounded-lg px-3 py-2 w-72 focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:shadow-md transition-all duration-200"
+              className="border border-[#0d9488]/40 bg-white text-gray-800 rounded-lg px-3 py-2 w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-[#0d9488] focus:shadow-md transition-all duration-200 text-sm sm:text-base"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -605,7 +645,7 @@ const AdminDashboard = ({ onLogout }) => {
                 dateOfLeaving: ""
               });
             }}
-            className="bg-[#059669] hover:bg-[#047857] hover:shadow-[#34d399]/40 text-white px-5 py-2 rounded-lg transition-transform duration-200 hover:-translate-y-0.5"
+            className="bg-[#059669] hover:bg-[#047857] hover:shadow-[#34d399]/40 text-white px-4 sm:px-5 py-2 rounded-lg transition-transform duration-200 hover:-translate-y-0.5 text-sm sm:text-base whitespace-nowrap"
           >
             Add Student
           </button>
@@ -629,7 +669,7 @@ const AdminDashboard = ({ onLogout }) => {
             <h3 className="text-xl font-semibold mb-4 text-[#0f766e]">
               {editingStudent ? 'Edit Student' : 'Add New Student'}
             </h3>
-            <form onSubmit={handleAddStudent} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleAddStudent} className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
                 <input
@@ -872,7 +912,7 @@ const AdminDashboard = ({ onLogout }) => {
           </motion.div>
         )}
 
-        {/* Student Table */}
+        {/* Student Table/Grid */}
         <motion.div
           className="bg-white shadow-xl rounded-2xl overflow-hidden border border-[#0d9488]/30"
           initial={{ opacity: 0, y: 40 }}
@@ -884,35 +924,106 @@ const AdminDashboard = ({ onLogout }) => {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0d9488]"></div>
               <p className="mt-2 text-gray-600">Loading students...</p>
             </div>
-          ) : (
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-[#0f766e] text-white uppercase text-sm tracking-wider">
-                <tr>
-                  <th className="py-3 px-6">Name</th>
-                  <th className="py-3 px-6">Email</th>
-                  <th className="py-3 px-6">Enrollment Number</th>
-                  <th className="py-3 px-6">Status</th>
-                  <th className="py-3 px-6">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-800">
-                {filteredStudents.length > 0 ? (
-                  filteredStudents.map((student, index) => (
-                    <motion.tr
-                      key={student._id}
-                      className="border-t hover:bg-[#ccfbf1] transition"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <td className="py-3 px-6 font-medium">{student.name}</td>
-                      <td className="py-3 px-6">{student.email}</td>
-                      <td className="py-3 px-6">{student.enrollmentNumber}</td>
-                      <td className="py-3 px-6">
+          ) : filteredStudents.length > 0 ? (
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-[#0f766e] text-white uppercase text-sm tracking-wider">
+                    <tr>
+                      <th className="py-3 px-6">Name</th>
+                      <th className="py-3 px-6">Email</th>
+                      <th className="py-3 px-6">Enrollment Number</th>
+                      <th className="py-3 px-6">Status</th>
+                      <th className="py-3 px-6">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-800">
+                    {filteredStudents.map((student, index) => (
+                      <motion.tr
+                        key={student._id}
+                        className="border-t hover:bg-[#ccfbf1] transition"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <td className="py-3 px-6 font-medium">{student.name}</td>
+                        <td className="py-3 px-6">{student.email}</td>
+                        <td className="py-3 px-6">{student.enrollmentNumber}</td>
+                        <td className="py-3 px-6">
+                          <select
+                            value={student.status}
+                            onChange={(e) => handleStatusChange(student._id, e.target.value)}
+                            className={`px-2 py-1 rounded text-sm font-medium ${student.status === 'approved'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                              }`}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                          </select>
+                        </td>
+                        <td className="py-3 px-6">
+                          <div className="flex gap-2 flex-wrap">
+                            <button
+                              onClick={() => handleEdit(student)}
+                              className="bg-[#0ea5e9] hover:bg-[#0284c7] hover:shadow-blue-300/50 text-white px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 text-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleGenerateLC(student)}
+                              disabled={student.status !== 'approved'}
+                              className={`px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 text-sm ${student.status === 'approved'
+                                ? 'bg-[#10b981] hover:bg-[#059669] hover:shadow-green-300/50 text-white'
+                                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                                }`}
+                            >
+                              Generate LC
+                            </button>
+                            <button
+                              onClick={() => handleDelete(student._id)}
+                              className="bg-[#ef4444] hover:bg-[#dc2626] hover:shadow-red-300/50 text-white px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile/Tablet Card View */}
+              <div className="lg:hidden p-4 space-y-4">
+                {filteredStudents.map((student, index) => (
+                  <motion.div
+                    key={student._id}
+                    className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Name</p>
+                        <p className="font-semibold text-gray-800">{student.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+                        <p className="text-gray-700 break-all">{student.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide">Enrollment Number</p>
+                        <p className="text-gray-700">{student.enrollmentNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Status</p>
                         <select
                           value={student.status}
                           onChange={(e) => handleStatusChange(student._id, e.target.value)}
-                          className={`px-2 py-1 rounded text-sm font-medium ${student.status === 'approved'
+                          className={`w-full px-3 py-2 rounded text-sm font-medium ${student.status === 'approved'
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                             }`}
@@ -920,45 +1031,43 @@ const AdminDashboard = ({ onLogout }) => {
                           <option value="pending">Pending</option>
                           <option value="approved">Approved</option>
                         </select>
-                      </td>
-                      <td className="py-3 px-6 flex gap-2">
-                        <button
-                          onClick={() => handleEdit(student)}
-                          className="bg-[#0ea5e9] hover:bg-[#0284c7] hover:shadow-blue-300/50 text-white px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleGenerateLC(student)} // This should call the function that opens the new window
-                          disabled={student.status !== 'approved'}
-                          className={`px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 ${student.status === 'approved'
-                            ? 'bg-[#10b981] hover:bg-[#059669] hover:shadow-green-300/50 text-white'
-                            : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                            }`}
-                        >
-                          Generate LC
-                        </button>
-                        <button
-                          onClick={() => handleDelete(student._id)}
-                          className="bg-[#ef4444] hover:bg-[#dc2626] hover:shadow-red-300/50 text-white px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </motion.tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="text-center py-6 text-gray-500 italic"
-                    >
-                      No students found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200">
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Actions</p>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => handleEdit(student)}
+                            className="flex-1 bg-[#0ea5e9] hover:bg-[#0284c7] text-white px-3 py-2 rounded transition-colors text-sm font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleGenerateLC(student)}
+                            disabled={student.status !== 'approved'}
+                            className={`flex-1 px-3 py-2 rounded transition-colors text-sm font-medium ${student.status === 'approved'
+                              ? 'bg-[#10b981] hover:bg-[#059669] text-white'
+                              : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                              }`}
+                          >
+                            Generate LC
+                          </button>
+                          <button
+                            onClick={() => handleDelete(student._id)}
+                            className="flex-1 bg-[#ef4444] hover:bg-[#dc2626] text-white px-3 py-2 rounded transition-colors text-sm font-medium"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12 text-gray-500 italic">
+              No students found
+            </div>
           )}
         </motion.div>
       </main>
@@ -974,19 +1083,20 @@ const AdminDashboard = ({ onLogout }) => {
 
       {/* Help/About/Contact Modal */}
       {showPage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-3 sm:p-4">
           <motion.div
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-auto m-2 sm:m-0"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 capitalize">{showPage}</h2>
                 <button
                   onClick={() => setShowPage(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl p-1"
+                  aria-label="Close"
                 >
                   ×
                 </button>
@@ -1088,7 +1198,7 @@ const AdminDashboard = ({ onLogout }) => {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowPage(null)}
-                  className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+                  className="px-4 sm:px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 text-sm sm:text-base"
                 >
                   Close
                 </button>

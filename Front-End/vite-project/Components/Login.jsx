@@ -147,13 +147,13 @@ export default function LoginPage({ onLogin }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-sky-50">
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-sky-50 px-4 py-6">
+      <div className="bg-white shadow-xl rounded-2xl p-4 sm:p-6 md:p-8 w-full max-w-md">
         {/* Title */}
-        <h1 className="text-2xl font-bold text-center text-emerald-600 mb-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-center text-emerald-600 mb-1">
           Welcome to LCG Portal
         </h1>
-        <p className="text-gray-500 text-center mb-6 text-sm">
+        <p className="text-gray-500 text-center mb-4 sm:mb-6 text-xs sm:text-sm px-2">
           Leaving Certificate Management System
         </p>
 
@@ -218,7 +218,7 @@ export default function LoginPage({ onLogin }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Student Signup Fields */}
           {activeTab === "student" && isSignup && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600">Full Name</label>
                 <input
@@ -434,7 +434,7 @@ export default function LoginPage({ onLogin }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 text-white rounded-lg font-medium shadow transition"
+            className="w-full py-2.5 sm:py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-400 text-white rounded-lg font-medium shadow transition text-sm sm:text-base"
           >
             {loading ? "Processing..." : (
               activeTab === "student" 
@@ -474,7 +474,7 @@ export default function LoginPage({ onLogin }) {
           )}
         </form>
 
-        <p className="text-gray-400 text-xs text-center mt-6">
+        <p className="text-gray-400 text-xs text-center mt-4 sm:mt-6 px-2">
           Secure and modern certificate management
         </p>
       </div>

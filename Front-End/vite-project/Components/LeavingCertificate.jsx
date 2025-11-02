@@ -374,54 +374,54 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
   };
 
   const CertificatePreview = () => (
-    <div className="certificate-print bg-white p-8 max-w-4xl mx-auto shadow-lg" style={{ minHeight: '297mm' }}>
+    <div className="certificate-print bg-white p-4 sm:p-6 md:p-8 max-w-4xl mx-auto shadow-lg" style={{ minHeight: '297mm' }}>
       {/* Top Header with Logo */}
-      <div className="text-center mb-4">
-        <div className="flex justify-center items-center mb-3">
+      <div className="text-center mb-3 sm:mb-4">
+        <div className="flex justify-center items-center mb-2 sm:mb-3">
           <img 
             src="/GPM-LOGO-2021.png" 
             alt="GPM Logo" 
-            className="h-24 w-24 object-contain"
+            className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain"
             onError={(e) => {
               // Fallback if image fails to load
               e.target.style.display = 'none';
             }}
           />
         </div>
-        <p className="text-sm font-semibold text-gray-800 mb-2">MAKING KNOWLEDGE TO WORK</p>
+        <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-2">MAKING KNOWLEDGE TO WORK</p>
       </div>
 
       {/* Institute Info */}
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">GOVERNMENT POLYTECHNIC MUMBAI</h2>
-        <p className="text-lg text-gray-700 mb-1">शासकीय तंत्रनिकेतन मुंबई</p>
-        <p className="text-sm text-gray-600 mb-2">49, KHERWADI, ALI YAWAK JUNG MARG, BANDRA (EAST), MUMBAI-400 051</p>
-        <p className="text-sm text-gray-600 mb-1">(Autonomous status granted by Govt. of Maharashtra)</p>
-        <p className="text-sm text-gray-600">(Approved by AICTE, New Delhi and Equivalent to MSBTE, Mumbai)</p>
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2">GOVERNMENT POLYTECHNIC MUMBAI</h2>
+        <p className="text-base sm:text-lg text-gray-700 mb-1">शासकीय तंत्रनिकेतन मुंबई</p>
+        <p className="text-xs sm:text-sm text-gray-600 mb-2 px-2">49, KHERWADI, ALI YAWAK JUNG MARG, BANDRA (EAST), MUMBAI-400 051</p>
+        <p className="text-xs sm:text-sm text-gray-600 mb-1">(Autonomous status granted by Govt. of Maharashtra)</p>
+        <p className="text-xs sm:text-sm text-gray-600">(Approved by AICTE, New Delhi and Equivalent to MSBTE, Mumbai)</p>
       </div>
 
       {/* Enrollment and Date */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 sm:mb-6">
         <div>
-          <p className="text-sm text-gray-700 font-semibold">ENROLLMENT NO.: {certificateData.enrollmentNumber}</p>
+          <p className="text-xs sm:text-sm text-gray-700 font-semibold">ENROLLMENT NO.: {certificateData.enrollmentNumber}</p>
         </div>
         <div>
-          <p className="text-sm text-gray-700">Date: {formatDate(certificateData.dateOfLeaving)}</p>
+          <p className="text-xs sm:text-sm text-gray-700">Date: {formatDate(certificateData.dateOfLeaving)}</p>
         </div>
       </div>
 
       {/* Title */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">LEAVING CERTIFICATE</h1>
-        <p className="text-sm text-gray-600 mb-2">ORIGINAL COPY</p>
-        <p className="text-sm text-gray-700">
+      <div className="text-center mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">LEAVING CERTIFICATE</h1>
+        <p className="text-xs sm:text-sm text-gray-600 mb-2">ORIGINAL COPY</p>
+        <p className="text-xs sm:text-sm text-gray-700 px-2">
           Certified that the following information is in accordance with the Institute Records:
         </p>
       </div>
 
       {/* Main Content */}
-      <div className="mb-8">
-        <div className="space-y-2 text-sm text-gray-700">
+      <div className="mb-6 sm:mb-8">
+        <div className="space-y-2 text-xs sm:text-sm text-gray-700">
           <p><span className="font-semibold">1. Registered Number of Candidate:</span> {certificateData.enrollmentNumber}</p>
           <p><span className="font-semibold">2. Name of the Candidate (in full):</span> {certificateData.name}</p>
           <p><span className="font-semibold">3. Mother Name:</span> {certificateData.motherName}</p>
@@ -450,38 +450,38 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
 
   if (showPreview) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
-          <div className="p-4 border-b flex justify-between items-center no-print">
-            <h3 className="text-lg font-semibold">Certificate Preview - PDF Downloaded Automatically</h3>
-            <div className="flex gap-2">
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
+        <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto m-2 sm:m-0">
+          <div className="p-3 sm:p-4 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 no-print">
+            <h3 className="text-base sm:text-lg font-semibold">Certificate Preview - PDF Downloaded Automatically</h3>
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button
                 onClick={handleDownloadPDF}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
+                className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm"
               >
                 📄 Download PDF Again
               </button>
               <button
                 onClick={handlePrint}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                className="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm"
               >
                 🖨️ Print Certificate
               </button>
               <button
                 onClick={() => setShowPreview(false)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                className="flex-1 sm:flex-none bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm"
               >
                 ✏️ Edit Certificate
               </button>
               <button
                 onClick={onClose}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+                className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm"
               >
                 ❌ Close
               </button>
             </div>
           </div>
-          <div className="p-4">
+          <div className="p-2 sm:p-4">
             <CertificatePreview />
           </div>
         </div>
@@ -490,65 +490,66 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
       <motion.div 
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto"
+        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto m-2 sm:m-0"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
+        <div className="p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
               {isEdit ? 'Edit Certificate' : 'Generate Leaving Certificate'}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl"
+              className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl p-1"
+              aria-label="Close"
             >
               ×
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Left Column */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Enrollment Number</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Enrollment Number</label>
                 <input
                   type="text"
                   value={certificateData.enrollmentNumber}
                   onChange={(e) => handleInputChange('enrollmentNumber', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input
                   type="text"
                   value={certificateData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
                 <input
                   type="text"
                   value={certificateData.motherName}
                   onChange={(e) => handleInputChange('motherName', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Religion</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Religion</label>
                 <select
                   value={certificateData.religion}
                   onChange={(e) => handleInputChange('religion', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 >
                   <option value="Hindu">Hindu</option>
                   <option value="Muslim">Muslim</option>
@@ -561,21 +562,21 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Caste & SubCaste</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Caste & SubCaste</label>
                 <input
                   type="text"
                   value={certificateData.caste}
                   onChange={(e) => handleInputChange('caste', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mother Tongue</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Mother Tongue</label>
                 <select
                   value={certificateData.motherTongue}
                   onChange={(e) => handleInputChange('motherTongue', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 >
                   <option value="Gujarati">Gujarati</option>
                   <option value="Hindi">Hindi</option>
@@ -593,32 +594,32 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Nationality</label>
                 <input
                   type="text"
                   value={certificateData.nationality}
                   onChange={(e) => handleInputChange('nationality', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Place of Birth</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Place of Birth</label>
                 <input
                   type="text"
                   value={certificateData.placeOfBirth}
                   onChange={(e) => handleInputChange('placeOfBirth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                 <input
                   type="date"
                   value={certificateData.dateOfBirth}
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -626,51 +627,51 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
             {/* Right Column */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Institute Last Attended</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Institute Last Attended</label>
                 <input
                   type="text"
                   value={certificateData.instituteLastAttended}
                   onChange={(e) => handleInputChange('instituteLastAttended', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date of Admission</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date of Admission</label>
                 <input
                   type="date"
                   value={certificateData.dateOfAdmission}
                   onChange={(e) => handleInputChange('dateOfAdmission', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Branch</label>
                 <input
                   type="text"
                   value={certificateData.branch}
                   onChange={(e) => handleInputChange('branch', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Class and Year</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Class and Year</label>
                 <input
                   type="text"
                   value={certificateData.classAndYear}
                   onChange={(e) => handleInputChange('classAndYear', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Conduct</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Conduct</label>
                 <select
                   value={certificateData.conduct}
                   onChange={(e) => handleInputChange('conduct', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 >
                   <option value="Excellent">Excellent</option>
                   <option value="Very Good">Very Good</option>
@@ -681,49 +682,49 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reason for Leaving Institute</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Reason for Leaving Institute</label>
                 <input
                   type="text"
                   value={certificateData.reasonForLeaving}
                   onChange={(e) => handleInputChange('reasonForLeaving', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Remarks</label>
                 <textarea
                   value={certificateData.remarks}
                   onChange={(e) => handleInputChange('remarks', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date of Leaving Institute</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Date of Leaving Institute</label>
                 <input
                   type="date"
                   value={certificateData.dateOfLeaving}
                   onChange={(e) => handleInputChange('dateOfLeaving', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-4 mt-8">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6 sm:mt-8">
             <button
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
             >
               Cancel
             </button>
             <button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:bg-gray-400 font-semibold"
+              className="px-4 sm:px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:bg-gray-400 font-semibold text-sm sm:text-base"
             >
               {isGenerating ? 'Generating & Downloading PDF...' : (isEdit ? 'Update & Download PDF' : 'Generate LC & Download PDF')}
             </button>
