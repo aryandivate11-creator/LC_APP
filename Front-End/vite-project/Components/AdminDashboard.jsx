@@ -151,14 +151,14 @@ const AdminDashboard = ({ onLogout }) => {
       dateOfBirth: student.dateOfBirth
         ? new Date(student.dateOfBirth).toISOString().split("T")[0]
         : (student.personalDetails?.dateOfBirth
-            ? new Date(student.personalDetails.dateOfBirth).toISOString().split("T")[0]
-            : ""),
+          ? new Date(student.personalDetails.dateOfBirth).toISOString().split("T")[0]
+          : ""),
       instituteLastAttended: student.instituteLastAttended || student.personalDetails?.instituteLastAttended || "",
       dateOfAdmission: student.dateOfAdmission
         ? new Date(student.dateOfAdmission).toISOString().split("T")[0]
         : (student.personalDetails?.dateOfAdmission
-            ? new Date(student.personalDetails.dateOfAdmission).toISOString().split("T")[0]
-            : ""),
+          ? new Date(student.personalDetails.dateOfAdmission).toISOString().split("T")[0]
+          : ""),
       conduct: student.personalDetails?.conduct || "",
       reasonForLeaving: student.personalDetails?.reasonForLeaving || "",
       remarks: student.personalDetails?.remarks || "",
@@ -169,9 +169,140 @@ const AdminDashboard = ({ onLogout }) => {
     setShowAddForm(true);
   };
 
-  const handleGenerateLC = (student) => {
-    setSelectedStudent(student);
-    setShowCertificateModal(true);
+  const handleGenerateLC = async (student) => {
+    if (!student) return;
+
+    const certificateData = {
+      enrollmentNumber: student.enrollmentNumber,
+      name: student.name,
+      motherName: student.motherName,
+      religion: student.religion || 'Hindu',
+      caste: student.caste || 'OBC',
+      motherTongue: student.motherTongue || 'Marathi',
+      nationality: student.nationality || 'Indian',
+      placeOfBirth: student.placeOfBirth || 'Mumbai',
+      dateOfBirth: new Date(student.dateOfBirth).toLocaleDateString('en-GB'),
+      instituteLastAttended: student.instituteLastAttended || 'Government Polytechnic Mumbai',
+      dateOfAdmission: new Date(student.dateOfAdmission).toLocaleDateString('en-GB'),
+      branch: student.branch || 'Diploma in Information Technology',
+      classAndYear: student.classAndYear || 'Third Year',
+      conduct: student.conduct || 'Very Good',
+      reasonForLeaving: student.reasonForLeaving || 'Completion of Course',
+      remarks: student.remarks || 'Good Academic Record',
+      dateOfLeaving: new Date().toLocaleDateString('en-GB'),
+      issueDate: new Date().toLocaleDateString('en-GB')
+    };
+
+    alert('LC generated successfully!');
+
+    const certificateHTML = `
+      <div class="certificate-print" style="font-family:'Times New Roman', serif; padding:40px; background:white; max-width:800px; margin:auto; border:2px solid #000;">
+        <div id="certificateBody">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <img src="/GPM-LOGO-2021.png" style="width:100px; height:auto;" />
+            <div style="text-align:center; flex-grow:1;">
+              <p style="margin:0; font-size:13pt;">MAKING KNOWLEDGE TO WORK</p>
+              <h2 style="margin:5px 0; font-size:20pt;">GOVERNMENT POLYTECHNIC MUMBAI</h2>
+              <p style="margin:0; font-size:13pt;">शासकीय तंत्रनिकेतन मुंबई</p>
+              <p style="margin:0; font-size:10pt;">
+                48, KHERWADI, ALI YAWAK JUNG MARG, BANDRA(E), MUMBAI - 400 051<br/>
+                (Autonomous status granted by Govt of Maharashtra)<br/>
+                (Approved by AICTE, New Delhi & Equivalent to MSBTE, Mumbai)
+              </p>
+            </div>
+          </div>
+          <hr style="border:1px solid #000; margin:15px 0;" />
+          <div style="display:flex; justify-content:space-between; font-size:12pt; margin-top:5px;">
+            <p><strong>ENROLLMENT NO:</strong> ${certificateData.enrollmentNumber}</p>
+            <p><strong>Date:</strong> ${certificateData.issueDate}</p>
+          </div>
+          <div style="text-align:center; margin-top:5px;">
+            <h3 style="text-decoration:underline; margin-bottom:3px;">LEAVING CERTIFICATE</h3>
+            <p style="margin-top:0; font-size:11pt;">ORIGINAL COPY</p>
+          </div>
+  
+          <div style="font-size:13pt; margin-top:15px; line-height:1.8;">
+            <p>1. <strong>Registered Number:</strong> ${certificateData.enrollmentNumber}</p>
+            <p>2. <strong>Name of the:</strong> ${certificateData.name}</p>
+            <p>3. <strong>Mother Name:</strong> ${certificateData.motherName}</p>
+            <p>4. <strong>Religion:</strong> ${certificateData.religion}</p>
+            <p>5. <strong>Caste & SubCaste:</strong> ${certificateData.caste}</p>
+            <p>6. <strong>Mother Tongue:</strong> ${certificateData.motherTongue}</p>
+            <p>7. <strong>Nationality:</strong> ${certificateData.nationality}</p>
+            <p>8. <strong>Place of Birth:</strong> ${certificateData.placeOfBirth}</p>
+            <p>9. <strong>Date of Birth:</strong> ${certificateData.dateOfBirth}</p>
+            <p>10. <strong>Institute Last Attended:</strong> ${certificateData.instituteLastAttended}</p>
+            <p>11. <strong>Date of Admission:</strong> ${certificateData.dateOfAdmission}</p>
+            <p>12. <strong>Branch/Class & Year:</strong> ${certificateData.branch} - ${certificateData.classAndYear}</p>
+            <p>13. <strong>Conduct:</strong> ${certificateData.conduct}</p>
+            <p>14. <strong>Reason for Leaving:</strong> ${certificateData.reasonForLeaving}</p>
+            <p>15. <strong>Remarks:</strong> ${certificateData.remarks}</p>
+            <p><strong>Date of Leaving:</strong> ${certificateData.dateOfLeaving}</p>
+          </div>
+  
+          <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:12pt;">
+            <div>
+              <p>_______________________</p>
+              <p>Class Teacher</p>
+            </div>
+            <div>
+              <p>_______________________</p>
+              <p>Head of Department</p>
+            </div>
+            <div>
+              <p>_______________________</p>
+              <p>Principal</p>
+            </div>
+          </div>
+        </div>
+  
+        <div id="actionButtons" style="text-align:center; margin-top:40px;">
+          <button onclick="window.print()" style="padding:10px 20px; background:#0d9488; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">🖨️ Print</button>
+          <button id="downloadBtn" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">📄 Download PDF</button>
+          <button onclick="window.close()" style="padding:10px 20px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Close</button>
+        </div>
+      </div>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Leaving Certificate - ${certificateData.enrollmentNumber}</title>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        </head>
+        <body>
+          ${certificateHTML}
+          <script>
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.addEventListener('click', async () => {
+              const { jsPDF } = window.jspdf;
+              const element = document.getElementById('certificateBody');
+              const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+              const imgData = canvas.toDataURL('image/png');
+              const pdf = new jsPDF('p', 'mm', 'a4');
+              const imgWidth = 210;
+              const pageHeight = 297;
+              const imgHeight = (canvas.height * imgWidth) / canvas.width;
+              let heightLeft = imgHeight;
+              let position = 0;
+              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+              while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+              }
+              pdf.save('Leaving_Certificate_${certificateData.enrollmentNumber}.pdf');
+            });
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const handleSaveCertificate = async (certificateData) => {
@@ -231,7 +362,7 @@ const AdminDashboard = ({ onLogout }) => {
       });
 
       if (response.ok) {
-        setStudents(students.map(s => 
+        setStudents(students.map(s =>
           s._id === id ? { ...s, status } : s
         ));
         fetchStats();
@@ -246,10 +377,10 @@ const AdminDashboard = ({ onLogout }) => {
   const handleAddStudent = async (e) => {
     e.preventDefault();
     try {
-      const url = editingStudent 
+      const url = editingStudent
         ? `${API_BASE_URL}/admin/students/${editingStudent._id}`
         : `${API_BASE_URL}/admin/students`;
-      
+
       const method = editingStudent ? 'PUT' : 'POST';
 
       // Prepare payload with top-level and personalDetails mapping
@@ -352,7 +483,7 @@ const AdminDashboard = ({ onLogout }) => {
           </ul>
 
           {/* Logout Button */}
-          <button 
+          <button
             onClick={onLogout}
             className="bg-white text-[#0f766e] font-semibold px-5 py-2 rounded-lg hover:bg-[#a7f3d0] hover:text-[#064e3b] transition-transform duration-300 hover:-translate-y-0.5 shadow-md"
           >
@@ -396,7 +527,7 @@ const AdminDashboard = ({ onLogout }) => {
       <main className="p-8">
         {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <motion.div 
+          <motion.div
             className="bg-white p-6 rounded-xl shadow-lg border border-[#0d9488]/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -405,8 +536,8 @@ const AdminDashboard = ({ onLogout }) => {
             <h3 className="text-lg font-semibold text-gray-700">Total Students</h3>
             <p className="text-3xl font-bold text-[#0f766e]">{stats.totalStudents}</p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="bg-white p-6 rounded-xl shadow-lg border border-[#0d9488]/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -415,8 +546,8 @@ const AdminDashboard = ({ onLogout }) => {
             <h3 className="text-lg font-semibold text-gray-700">Approved</h3>
             <p className="text-3xl font-bold text-green-600">{stats.approvedStudents}</p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="bg-white p-6 rounded-xl shadow-lg border border-[#0d9488]/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -425,8 +556,8 @@ const AdminDashboard = ({ onLogout }) => {
             <h3 className="text-lg font-semibold text-gray-700">Pending</h3>
             <p className="text-3xl font-bold text-yellow-600">{stats.pendingStudents}</p>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="bg-white p-6 rounded-xl shadow-lg border border-[#0d9488]/20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -448,7 +579,7 @@ const AdminDashboard = ({ onLogout }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button 
+          <button
             onClick={() => {
               setShowAddForm(true);
               setEditingStudent(null);
@@ -489,7 +620,7 @@ const AdminDashboard = ({ onLogout }) => {
 
         {/* Add/Edit Student Form */}
         {showAddForm && (
-          <motion.div 
+          <motion.div
             className="bg-white p-6 rounded-xl shadow-lg mb-6 border border-[#0d9488]/20"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -504,50 +635,50 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.name}
-                  onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
                 <input
                   type="email"
                   value={newStudent.email}
-                  onChange={(e) => setNewStudent({...newStudent, email: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Enrollment Number</label>
                 <input
                   type="text"
                   value={newStudent.enrollmentNumber}
-                  onChange={(e) => setNewStudent({...newStudent, enrollmentNumber: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, enrollmentNumber: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Mother's Name</label>
                 <input
                   type="text"
                   value={newStudent.motherName}
-                  onChange={(e) => setNewStudent({...newStudent, motherName: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, motherName: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Mother Tongue</label>
                 <select
                   value={newStudent.motherTongue}
-                  onChange={(e) => setNewStudent({...newStudent, motherTongue: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, motherTongue: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 >
@@ -565,12 +696,12 @@ const AdminDashboard = ({ onLogout }) => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Year</label>
                 <select
                   value={newStudent.year}
-                  onChange={(e) => setNewStudent({...newStudent, year: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, year: e.target.value })}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 >
@@ -588,7 +719,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.branch}
-                  onChange={(e) => setNewStudent({...newStudent, branch: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, branch: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -598,7 +729,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.classAndYear}
-                  onChange={(e) => setNewStudent({...newStudent, classAndYear: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, classAndYear: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -608,7 +739,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.religion}
-                  onChange={(e) => setNewStudent({...newStudent, religion: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, religion: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -618,7 +749,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.caste}
-                  onChange={(e) => setNewStudent({...newStudent, caste: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, caste: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -628,7 +759,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.nationality}
-                  onChange={(e) => setNewStudent({...newStudent, nationality: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, nationality: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -638,7 +769,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.placeOfBirth}
-                  onChange={(e) => setNewStudent({...newStudent, placeOfBirth: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, placeOfBirth: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -648,7 +779,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="date"
                   value={newStudent.dateOfBirth}
-                  onChange={(e) => setNewStudent({...newStudent, dateOfBirth: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, dateOfBirth: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -658,7 +789,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.instituteLastAttended}
-                  onChange={(e) => setNewStudent({...newStudent, instituteLastAttended: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, instituteLastAttended: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -668,7 +799,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="date"
                   value={newStudent.dateOfAdmission}
-                  onChange={(e) => setNewStudent({...newStudent, dateOfAdmission: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, dateOfAdmission: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -677,7 +808,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <label className="block text-sm font-medium text-gray-600 mb-1">Conduct</label>
                 <select
                   value={newStudent.conduct}
-                  onChange={(e) => setNewStudent({...newStudent, conduct: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, conduct: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 >
                   <option value="">Select Conduct</option>
@@ -694,7 +825,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="text"
                   value={newStudent.reasonForLeaving}
-                  onChange={(e) => setNewStudent({...newStudent, reasonForLeaving: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, reasonForLeaving: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -704,7 +835,7 @@ const AdminDashboard = ({ onLogout }) => {
                 <textarea
                   rows={3}
                   value={newStudent.remarks}
-                  onChange={(e) => setNewStudent({...newStudent, remarks: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, remarks: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
@@ -714,11 +845,11 @@ const AdminDashboard = ({ onLogout }) => {
                 <input
                   type="date"
                   value={newStudent.dateOfLeaving}
-                  onChange={(e) => setNewStudent({...newStudent, dateOfLeaving: e.target.value})}
+                  onChange={(e) => setNewStudent({ ...newStudent, dateOfLeaving: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#0d9488] focus:border-[#0d9488] outline-none"
                 />
               </div>
-              
+
               <div className="md:col-span-2 flex gap-2">
                 <button
                   type="submit"
@@ -781,11 +912,10 @@ const AdminDashboard = ({ onLogout }) => {
                         <select
                           value={student.status}
                           onChange={(e) => handleStatusChange(student._id, e.target.value)}
-                          className={`px-2 py-1 rounded text-sm font-medium ${
-                            student.status === 'approved' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                          className={`px-2 py-1 rounded text-sm font-medium ${student.status === 'approved'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                            }`}
                         >
                           <option value="pending">Pending</option>
                           <option value="approved">Approved</option>
@@ -799,13 +929,12 @@ const AdminDashboard = ({ onLogout }) => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleGenerateLC(student)}
+                          onClick={() => handleGenerateLC(student)} // This should call the function that opens the new window
                           disabled={student.status !== 'approved'}
-                          className={`px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 ${
-                            student.status === 'approved'
-                              ? 'bg-[#10b981] hover:bg-[#059669] hover:shadow-green-300/50 text-white'
-                              : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                          }`}
+                          className={`px-3 py-1 rounded transition-all duration-200 hover:-translate-y-0.5 ${student.status === 'approved'
+                            ? 'bg-[#10b981] hover:bg-[#059669] hover:shadow-green-300/50 text-white'
+                            : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                            }`}
                         >
                           Generate LC
                         </button>
@@ -931,9 +1060,9 @@ const AdminDashboard = ({ onLogout }) => {
                       <div>
                         <h4 className="font-semibold">Administrative Office</h4>
                         <p><strong>Address:</strong><br />
-                        49, KHERWADI, ALI YAWAK JUNG MARG<br />
-                        BANDRA (EAST), MUMBAI-400 051<br />
-                        Maharashtra, India</p>
+                          49, KHERWADI, ALI YAWAK JUNG MARG<br />
+                          BANDRA (EAST), MUMBAI-400 051<br />
+                          Maharashtra, India</p>
                       </div>
                       <div>
                         <h4 className="font-semibold">Contact Details</h4>
@@ -944,8 +1073,8 @@ const AdminDashboard = ({ onLogout }) => {
                       <div>
                         <h4 className="font-semibold">Office Hours</h4>
                         <p>Monday to Friday: 9:00 AM - 5:00 PM<br />
-                        Saturday: 9:00 AM - 1:00 PM<br />
-                        Sunday: Closed</p>
+                          Saturday: 9:00 AM - 1:00 PM<br />
+                          Sunday: Closed</p>
                       </div>
                       <div>
                         <h4 className="font-semibold">Support</h4>

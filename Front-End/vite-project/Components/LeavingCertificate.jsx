@@ -95,54 +95,195 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
     setIsGenerating(true);
     try {
       await onSave(certificateData);
-      setShowPreview(true);
+  
+      // Open certificate in a new window
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        const contentHTML = document.querySelector('.certificate-print').outerHTML;
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Leaving Certificate - ${certificateData.enrollmentNumber}</title>
+              <link rel="stylesheet" href="/src/print.css">
+              <style>
+                body {
+                  font-family: 'Times New Roman', serif;
+                  padding: 20px;
+                  background: white;
+                }
+                .action-buttons {
+                  text-align: center;
+                  margin-top: 20px;
+                }
+                .action-buttons button {
+                  padding: 10px 20px;
+                  margin: 5px;
+                  border: none;
+                  border-radius: 5px;
+                  cursor: pointer;
+                  font-size: 16px;
+                  color: white;
+                }
+                .print-btn { background-color: #0d9488; }
+                .download-btn { background-color: #3b82f6; }
+                .close-btn { background-color: #ef4444; }
+              </style>
+            </head>
+            <body>
+              ${contentHTML}
+              <div class="action-buttons">
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+                <button class="download-btn" id="downloadBtn">📄 Download PDF</button>
+                <button class="close-btn" onclick="window.close()">❌ Close</button>
+              </div>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+              <script>
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.addEventListener('click', async () => {
+                  const { jsPDF } = window.jspdf;
+                  const element = document.querySelector('.certificate-print');
+                  const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                  const imgData = canvas.toDataURL('image/png');
+                  const pdf = new jsPDF('p', 'mm', 'a4');
+                  const imgWidth = 210;
+                  const pageHeight = 297;
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                  let heightLeft = imgHeight;
+                  let position = 0;
+                  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                  heightLeft -= pageHeight;
+                  while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                  }
+                  pdf.save('Leaving_Certificate_${certificateData.enrollmentNumber}.pdf');
+                });
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
     } catch (error) {
       console.error('Error generating certificate:', error);
+      alert('Error generating certificate. Please try again.');
     } finally {
       setIsGenerating(false);
     }
   };
 
   const handlePrint = () => {
-    // Create a new window for printing
+    // Create a new window for printing with logo
     const printWindow = window.open('', '_blank');
     const printContent = document.querySelector('.certificate-print');
     
     if (printWindow && printContent) {
+      // Get the logo source (absolute URL)
+      const logoImg = printContent.querySelector('img');
+      const logoSrc = logoImg ? logoImg.src : '/GPM-LOGO-2021.png';
+      
+      // Clone the content and ensure logo is included
+      const contentHTML = printContent.innerHTML;
+      
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Leaving Certificate - Print</title>
+            <title>Leaving Certificate - ${certificateData.enrollmentNumber || 'GPM'}</title>
             <style>
+              @page {
+                size: A4;
+                margin: 15mm;
+              }
               @media print {
                 body { margin: 0; padding: 0; }
-                .no-print { display: none; }
+                .no-print { display: none !important; }
+                .certificate-print {
+                  margin: 0;
+                  padding: 20px;
+                }
               }
               body {
-                font-family: Arial, sans-serif;
+                font-family: 'Times New Roman', serif;
                 padding: 20px;
                 background: white;
+                margin: 0;
+              }
+              .certificate-print {
+                max-width: 100%;
+                margin: 0 auto;
+                background: white;
+              }
+              .certificate-print img {
+                max-width: 100px;
+                height: auto;
+                display: block;
+                margin: 0 auto 10px;
+              }
+              .certificate-print h1 {
+                font-size: 24pt;
+                font-weight: bold;
+                text-align: center;
+                margin: 20px 0;
+              }
+              .certificate-print h2 {
+                font-size: 18pt;
+                font-weight: bold;
+                text-align: center;
+                margin: 15px 0;
+              }
+              .certificate-print p {
+                font-size: 12pt;
+                line-height: 1.6;
+                margin: 8px 0;
               }
             </style>
             <link rel="stylesheet" href="/src/print.css">
           </head>
           <body>
-            ${printContent.outerHTML}
-            <div class="no-print" style="text-align: center; margin-top: 20px;">
-              <button onclick="window.print()" style="padding: 10px 20px; background: #0d9488; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">🖨️ Print</button>
-              <button onclick="window.close()" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer;">❌ Close</button>
+            <div class="certificate-print">
+              ${contentHTML}
+            </div>
+            <div class="no-print" style="text-align: center; margin-top: 20px; padding: 20px;">
+              <button onclick="window.print()" style="padding: 12px 24px; background: #0d9488; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; font-size: 16px;">🖨️ Print Certificate</button>
+              <button onclick="window.close()" style="padding: 12px 24px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Close</button>
             </div>
           </body>
         </html>
       `);
       printWindow.document.close();
       
-      // Wait for content to load, then show print dialog
+      // Wait for content and images to load, then show print dialog
       printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print();
-        }, 250);
+        // Wait for logo to load
+        const logoElement = printWindow.document.querySelector('img');
+        if (logoElement) {
+          if (logoElement.complete) {
+            setTimeout(() => {
+              printWindow.print();
+            }, 300);
+          } else {
+            logoElement.onload = () => {
+              setTimeout(() => {
+                printWindow.print();
+              }, 300);
+            };
+            logoElement.onerror = () => {
+              // Logo failed to load, proceed anyway
+              setTimeout(() => {
+                printWindow.print();
+              }, 300);
+            };
+          }
+        } else {
+          setTimeout(() => {
+            printWindow.print();
+          }, 300);
+        }
       };
     } else {
       // Fallback to regular print
@@ -158,71 +299,63 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
         return;
       }
 
-      // Create a new window to show download progress
-      const downloadWindow = window.open('', '_blank');
-      if (downloadWindow) {
-        downloadWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Downloading Certificate...</title>
-              <style>
-                body {
-                  font-family: Arial, sans-serif;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                  height: 100vh;
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                }
-                .spinner {
-                  border: 4px solid rgba(255,255,255,0.3);
-                  border-radius: 50%;
-                  border-top: 4px solid white;
-                  width: 50px;
-                  height: 50px;
-                  animation: spin 1s linear infinite;
-                  margin-bottom: 20px;
-                }
-                @keyframes spin {
-                  0% { transform: rotate(0deg); }
-                  100% { transform: rotate(360deg); }
-                }
-              </style>
-            </head>
-            <body>
-              <div class="spinner"></div>
-              <h2>Generating PDF...</h2>
-              <p>Please wait while we prepare your certificate for download.</p>
-            </body>
-          </html>
-        `);
-        downloadWindow.document.close();
+      // Wait a bit to ensure logo is loaded
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Ensure logo is loaded before capturing
+      const logoImg = element.querySelector('img');
+      if (logoImg) {
+        await new Promise((resolve, reject) => {
+          if (logoImg.complete) {
+            resolve();
+          } else {
+            logoImg.onload = resolve;
+            logoImg.onerror = reject;
+            // Timeout after 5 seconds
+            setTimeout(reject, 5000);
+          }
+        }).catch(() => {
+          console.warn('Logo may not have loaded properly');
+        });
       }
 
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: '#ffffff',
-        logging: false
+        logging: false,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        onclone: (clonedDoc) => {
+          // Ensure logo is visible in cloned document
+          const clonedElement = clonedDoc.querySelector('.certificate-print');
+          if (clonedElement) {
+            const clonedLogo = clonedElement.querySelector('img');
+            if (clonedLogo) {
+              clonedLogo.style.display = 'block';
+              clonedLogo.style.maxWidth = '100%';
+              clonedLogo.style.height = 'auto';
+            }
+          }
+        }
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF('p', 'mm', 'a4');
       
-      const imgWidth = 210;
-      const pageHeight = 295;
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
 
       let position = 0;
 
+      // Add image to PDF
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
+      // Add additional pages if needed
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -230,21 +363,31 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
         heightLeft -= pageHeight;
       }
 
-      pdf.save(`Leaving_Certificate_${certificateData.enrollmentNumber}.pdf`);
+      // Save PDF with enrollment number
+      const fileName = `Leaving_Certificate_${certificateData.enrollmentNumber || 'GPM'}_${new Date().getTime()}.pdf`;
+      pdf.save(fileName);
       
-      if (downloadWindow) {
-        downloadWindow.close();
-      }
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
+      alert('Error generating PDF. Please try again or use the Print button.');
     }
   };
 
   const CertificatePreview = () => (
     <div className="certificate-print bg-white p-8 max-w-4xl mx-auto shadow-lg" style={{ minHeight: '297mm' }}>
-      {/* Top Header */}
+      {/* Top Header with Logo */}
       <div className="text-center mb-4">
+        <div className="flex justify-center items-center mb-3">
+          <img 
+            src="/GPM-LOGO-2021.png" 
+            alt="GPM Logo" 
+            className="h-24 w-24 object-contain"
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
         <p className="text-sm font-semibold text-gray-800 mb-2">MAKING KNOWLEDGE TO WORK</p>
       </div>
 
@@ -310,13 +453,13 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
           <div className="p-4 border-b flex justify-between items-center no-print">
-            <h3 className="text-lg font-semibold">Certificate Preview</h3>
+            <h3 className="text-lg font-semibold">Certificate Preview - PDF Downloaded Automatically</h3>
             <div className="flex gap-2">
               <button
                 onClick={handleDownloadPDF}
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
               >
-                📄 Download PDF
+                📄 Download PDF Again
               </button>
               <button
                 onClick={handlePrint}
@@ -331,10 +474,10 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
                 ✏️ Edit Certificate
               </button>
               <button
-                onClick={() => setShowPreview(false)}
+                onClick={onClose}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
               >
-                ❌ Close Preview
+                ❌ Close
               </button>
             </div>
           </div>
@@ -580,26 +723,10 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
             <button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:bg-gray-400"
+              className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg disabled:bg-gray-400 font-semibold"
             >
-              {isGenerating ? 'Generating...' : (isEdit ? 'Update Certificate' : 'Generate Certificate')}
+              {isGenerating ? 'Generating & Downloading PDF...' : (isEdit ? 'Update & Download PDF' : 'Generate LC & Download PDF')}
             </button>
-            {showPreview && (
-              <>
-                <button
-                  onClick={handlePrint}
-                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
-                >
-                  🖨️ Print
-                </button>
-                <button
-                  onClick={handleDownloadPDF}
-                  className="px-6 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg"
-                >
-                  📄 Download PDF
-                </button>
-              </>
-            )}
           </div>
         </div>
       </motion.div>
