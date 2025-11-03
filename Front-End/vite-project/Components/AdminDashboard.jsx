@@ -16,8 +16,16 @@ const AdminDashboard = ({ onLogout }) => {
     certificatesGenerated: 0
   });
 
+  const saveStats = (updatedStats) => {
+    setStats(updatedStats);
+    localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
+  };
+  
+  
+
   const API_BASE_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
+
 
   const [newStudent, setNewStudent] = useState({
     name: "",
@@ -93,8 +101,25 @@ const AdminDashboard = ({ onLogout }) => {
   // Load data on component mount
   useEffect(() => {
     fetchStudents();
-    fetchStats();
+  
+    // Load saved stats first
+    const savedStats = JSON.parse(localStorage.getItem("dashboardStats"));
+    if (savedStats) {
+      setStats(savedStats);
+    } else {
+      fetchStats(); // only call if no saved stats found
+    }
   }, []);
+  
+
+  // Load saved stats (especially certificates count) from localStorage
+  useEffect(() => {
+    const savedStats = JSON.parse(localStorage.getItem("dashboardStats"));
+    if (savedStats) {
+      setStats(savedStats);
+    }
+  }, []);
+
 
   // Search functionality
   useEffect(() => {
@@ -172,100 +197,124 @@ const AdminDashboard = ({ onLogout }) => {
 
   const handleGenerateLC = async (student) => {
     if (!student) return;
-
+  
+    // Load students from localStorage (for persistence)
+    const savedStudents = JSON.parse(localStorage.getItem("students")) || [];
+  
+    // Check if this student already had an LC generated earlier
+    const isAlreadyGenerated =
+      student.hasGeneratedLC ||
+      savedStudents.find((s) => s.enrollmentNumber === student.enrollmentNumber)?.hasGeneratedLC;
+  
+    // Update the student’s hasGeneratedLC flag locally
+    const updatedStudents = students.map((s) =>
+      s.enrollmentNumber === student.enrollmentNumber
+        ? { ...s, hasGeneratedLC: true }
+        : s
+    );
+    setStudents(updatedStudents);
+    localStorage.setItem("students", JSON.stringify(updatedStudents));
+  
+    // ✅ Only increase the count once per student ever
+    if (!isAlreadyGenerated) {
+      const newCount = stats.certificatesGenerated + 1;
+      const updatedStats = { ...stats, certificatesGenerated: newCount };
+      saveStats(updatedStats);
+    }
+  
+    // Certificate details
     const certificateData = {
       enrollmentNumber: student.enrollmentNumber,
       name: student.name,
       motherName: student.motherName,
-      religion: student.religion || 'Hindu',
-      caste: student.caste || 'OBC',
-      motherTongue: student.motherTongue || 'Marathi',
-      nationality: student.nationality || 'Indian',
-      placeOfBirth: student.placeOfBirth || 'Mumbai',
-      dateOfBirth: new Date(student.dateOfBirth).toLocaleDateString('en-GB'),
-      instituteLastAttended: student.instituteLastAttended || 'Government Polytechnic Mumbai',
-      dateOfAdmission: new Date(student.dateOfAdmission).toLocaleDateString('en-GB'),
-      branch: student.branch || 'Diploma in Information Technology',
-      classAndYear: student.classAndYear || 'Third Year',
-      conduct: student.conduct || 'Very Good',
-      reasonForLeaving: student.reasonForLeaving || 'Completion of Course',
-      remarks: student.remarks || 'Good Academic Record',
-      dateOfLeaving: new Date().toLocaleDateString('en-GB'),
-      issueDate: new Date().toLocaleDateString('en-GB')
+      religion: student.religion || "Hindu",
+      caste: student.caste || "OBC",
+      motherTongue: student.motherTongue || "Marathi",
+      nationality: student.nationality || "Indian",
+      placeOfBirth: student.placeOfBirth || "Mumbai",
+      dateOfBirth: new Date(student.dateOfBirth).toLocaleDateString("en-GB"),
+      instituteLastAttended:
+        student.instituteLastAttended || "Government Polytechnic Mumbai",
+      dateOfAdmission: new Date(student.dateOfAdmission).toLocaleDateString("en-GB"),
+      branch: student.branch || "Diploma in Information Technology",
+      classAndYear: student.classAndYear || "Third Year",
+      conduct: student.conduct || "Very Good",
+      reasonForLeaving: student.reasonForLeaving || "Completion of Course",
+      remarks: student.remarks || "Good Academic Record",
+      dateOfLeaving: new Date().toLocaleDateString("en-GB"),
+      issueDate: new Date().toLocaleDateString("en-GB"),
     };
-
-    // alert('LC generated successfully!');
-
+  
+    // Certificate HTML
     const certificateHTML = `
-      <div class="certificate-print" style="font-family:'Times New Roman', serif; padding:40px; background:white; max-width:800px; margin:auto; border:2px solid #000;">
-        <div id="certificateBody">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-            <img src="/GPM-LOGO-2021.png" style="width:100px; height:auto;" />
-            <div style="text-align:center; flex-grow:1;">
-              <p style="margin:0; font-size:13pt;">MAKING KNOWLEDGE TO WORK</p>
-              <h2 style="margin:5px 0; font-size:20pt;">GOVERNMENT POLYTECHNIC MUMBAI</h2>
-              <p style="margin:0; font-size:13pt;">शासकीय तंत्रनिकेतन मुंबई</p>
-              <p style="margin:0; font-size:10pt;">
-                48, KHERWADI, ALI YAWAK JUNG MARG, BANDRA(E), MUMBAI - 400 051<br/>
-                (Autonomous status granted by Govt of Maharashtra)<br/>
-                (Approved by AICTE, New Delhi & Equivalent to MSBTE, Mumbai)
-              </p>
-            </div>
-          </div>
-          <hr style="border:1px solid #000; margin:15px 0;" />
-          <div style="display:flex; justify-content:space-between; font-size:12pt; margin-top:5px;">
-            <p><strong>ENROLLMENT NO:</strong> ${certificateData.enrollmentNumber}</p>
-            <p><strong>Date:</strong> ${certificateData.issueDate}</p>
-          </div>
-          <div style="text-align:center; margin-top:5px;">
-            <h3 style="text-decoration:underline; margin-bottom:3px;">LEAVING CERTIFICATE</h3>
-            <p style="margin-top:0; font-size:11pt;">ORIGINAL COPY</p>
-          </div>
-  
-          <div style="font-size:13pt; margin-top:15px; line-height:1.8;">
-            <p>1. <strong>Registered Number:</strong> ${certificateData.enrollmentNumber}</p>
-            <p>2. <strong>Name of the:</strong> ${certificateData.name}</p>
-            <p>3. <strong>Mother Name:</strong> ${certificateData.motherName}</p>
-            <p>4. <strong>Religion:</strong> ${certificateData.religion}</p>
-            <p>5. <strong>Caste & SubCaste:</strong> ${certificateData.caste}</p>
-            <p>6. <strong>Mother Tongue:</strong> ${certificateData.motherTongue}</p>
-            <p>7. <strong>Nationality:</strong> ${certificateData.nationality}</p>
-            <p>8. <strong>Place of Birth:</strong> ${certificateData.placeOfBirth}</p>
-            <p>9. <strong>Date of Birth:</strong> ${certificateData.dateOfBirth}</p>
-            <p>10. <strong>Institute Last Attended:</strong> ${certificateData.instituteLastAttended}</p>
-            <p>11. <strong>Date of Admission:</strong> ${certificateData.dateOfAdmission}</p>
-            <p>12. <strong>Branch/Class & Year:</strong> ${certificateData.branch} - ${certificateData.classAndYear}</p>
-            <p>13. <strong>Conduct:</strong> ${certificateData.conduct}</p>
-            <p>14. <strong>Reason for Leaving:</strong> ${certificateData.reasonForLeaving}</p>
-            <p>15. <strong>Remarks:</strong> ${certificateData.remarks}</p>
-            <p><strong>Date of Leaving:</strong> ${certificateData.dateOfLeaving}</p>
-          </div>
-  
-          <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:12pt;">
-            <div>
-              <p>_______________________</p>
-              <p>Class Teacher</p>
-            </div>
-            <div>
-              <p>_______________________</p>
-              <p>Head of Department</p>
-            </div>
-            <div>
-              <p>_______________________</p>
-              <p>Principal</p>
-            </div>
+      <div class="certificate-print" id="certificateBody" style="font-family:'Times New Roman', serif; padding:40px; background:white; max-width:800px; margin:auto; border:2px solid #000;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+          <img src="/GPM-LOGO-2021.png" style="width:100px; height:auto;" />
+          <div style="text-align:center; flex-grow:1;">
+            <p style="margin:0; font-size:13pt;">MAKING KNOWLEDGE TO WORK</p>
+            <h2 style="margin:5px 0; font-size:20pt;">GOVERNMENT POLYTECHNIC MUMBAI</h2>
+            <p style="margin:0; font-size:13pt;">शासकीय तंत्रनिकेतन मुंबई</p>
+            <p style="margin:0; font-size:10pt;">
+              48, KHERWADI, ALI YAWAK JUNG MARG, BANDRA(E), MUMBAI - 400 051<br/>
+              (Autonomous status granted by Govt of Maharashtra)<br/>
+              (Approved by AICTE, New Delhi & Equivalent to MSBTE, Mumbai)
+            </p>
           </div>
         </div>
   
-        <div id="actionButtons" style="text-align:center; margin-top:40px;">
-          <button onclick="window.print()" style="padding:10px 20px; background:#0d9488; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">🖨️ Print</button>
-          <button id="downloadBtn" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">📄 Download PDF</button>
-          <button onclick="window.close()" style="padding:10px 20px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Close</button>
+        <hr style="border:1px solid #000; margin:15px 0;" />
+        <div style="display:flex; justify-content:space-between; font-size:12pt; margin-top:5px;">
+          <p><strong>ENROLLMENT NO:</strong> ${certificateData.enrollmentNumber}</p>
+          <p><strong>Date:</strong> ${certificateData.issueDate}</p>
+        </div>
+        <div style="text-align:center; margin-top:5px;">
+          <h3 style="text-decoration:underline; margin-bottom:3px;">LEAVING CERTIFICATE</h3>
+          <p style="margin-top:0; font-size:11pt;">ORIGINAL COPY</p>
+        </div>
+  
+        <div style="font-size:13pt; margin-top:15px; line-height:1.8;">
+          <p>1. <strong>Registered Number:</strong> ${certificateData.enrollmentNumber}</p>
+          <p>2. <strong>Name of the:</strong> ${certificateData.name}</p>
+          <p>3. <strong>Mother Name:</strong> ${certificateData.motherName}</p>
+          <p>4. <strong>Religion:</strong> ${certificateData.religion}</p>
+          <p>5. <strong>Caste & SubCaste:</strong> ${certificateData.caste}</p>
+          <p>6. <strong>Mother Tongue:</strong> ${certificateData.motherTongue}</p>
+          <p>7. <strong>Nationality:</strong> ${certificateData.nationality}</p>
+          <p>8. <strong>Place of Birth:</strong> ${certificateData.placeOfBirth}</p>
+          <p>9. <strong>Date of Birth:</strong> ${certificateData.dateOfBirth}</p>
+          <p>10. <strong>Institute Last Attended:</strong> ${certificateData.instituteLastAttended}</p>
+          <p>11. <strong>Date of Admission:</strong> ${certificateData.dateOfAdmission}</p>
+          <p>12. <strong>Branch/Class & Year:</strong> ${certificateData.branch} - ${certificateData.classAndYear}</p>
+          <p>13. <strong>Conduct:</strong> ${certificateData.conduct}</p>
+          <p>14. <strong>Reason for Leaving:</strong> ${certificateData.reasonForLeaving}</p>
+          <p>15. <strong>Remarks:</strong> ${certificateData.remarks}</p>
+          <p><strong>Date of Leaving:</strong> ${certificateData.dateOfLeaving}</p>
+        </div>
+  
+        <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:12pt;">
+          <div>
+            <p>_______________________</p>
+            <p>Class Teacher</p>
+          </div>
+          <div>
+            <p>_______________________</p>
+            <p>Head of Department</p>
+          </div>
+          <div>
+            <p>_______________________</p>
+            <p>Principal</p>
+          </div>
         </div>
       </div>
+  
+      <div id="actionButtons" style="text-align:center; margin-top:40px;">
+        <button onclick="window.print()" style="padding:10px 20px; background:#0d9488; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">🖨️ Print</button>
+        <button id="downloadBtn" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:5px; margin-right:10px; cursor:pointer;">📄 Download PDF</button>
+        <button onclick="window.close()" style="padding:10px 20px; background:#ef4444; color:white; border:none; border-radius:5px; cursor:pointer;">❌ Close</button>
+      </div>
     `;
-
-    const printWindow = window.open('', '_blank');
+  
+    const printWindow = window.open("", "_blank");
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -273,12 +322,25 @@ const AdminDashboard = ({ onLogout }) => {
           <title>Leaving Certificate - ${certificateData.enrollmentNumber}</title>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+          <style>
+            @page { size: A4; margin: 10mm; }
+            body {
+              background: white;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              transform: scale(0.95);
+              transform-origin: top center;
+            }
+            .certificate-print { page-break-inside: avoid; overflow: hidden; }
+            @media print { #actionButtons { display: none !important; } }
+          </style>
         </head>
         <body>
           ${certificateHTML}
           <script>
             const downloadBtn = document.getElementById('downloadBtn');
             downloadBtn.addEventListener('click', async () => {
+              document.getElementById('actionButtons').style.display = 'none';
               const { jsPDF } = window.jspdf;
               const element = document.getElementById('certificateBody');
               const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
@@ -287,17 +349,9 @@ const AdminDashboard = ({ onLogout }) => {
               const imgWidth = 210;
               const pageHeight = 297;
               const imgHeight = (canvas.height * imgWidth) / canvas.width;
-              let heightLeft = imgHeight;
-              let position = 0;
-              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-              while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-              }
+              pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
               pdf.save('Leaving_Certificate_${certificateData.enrollmentNumber}.pdf');
+              document.getElementById('actionButtons').style.display = 'block';
             });
           </script>
         </body>
@@ -305,6 +359,8 @@ const AdminDashboard = ({ onLogout }) => {
     `);
     printWindow.document.close();
   };
+  
+
 
   const handleSaveCertificate = async (certificateData) => {
     try {
