@@ -288,7 +288,7 @@ const AdminDashboard = ({ onLogout }) => {
           <p>13. <strong>Conduct:</strong> ${certificateData.conduct}</p>
           <p>14. <strong>Reason for Leaving:</strong> ${certificateData.reasonForLeaving}</p>
           <p>15. <strong>Remarks:</strong> ${certificateData.remarks}</p>
-          <p><strong>Date of Leaving:</strong> ${certificateData.dateOfLeaving}</p>
+          <p>16. <strong>Date of Leaving:</strong> ${certificateData.dateOfLeaving}</p>
         </div>
   
         <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:12pt;">
@@ -1232,8 +1232,8 @@ const AdminDashboard = ({ onLogout }) => {
                       </div>
                       <div>
                         <h4 className="font-semibold">Contact Details</h4>
-                        <p><strong>Phone:</strong> +91-XX-XXXX-XXXX</p>
-                        <p><strong>Email:</strong> admin@gpmumbai.ac.in</p>
+                        <p><strong>Phone:</strong> +91-9619760013</p>
+                        <p><strong>Email:</strong> og.mandatory@gmail.com</p>
                         <p><strong>Website:</strong> www.gpmumbai.ac.in</p>
                       </div>
                       <div>
