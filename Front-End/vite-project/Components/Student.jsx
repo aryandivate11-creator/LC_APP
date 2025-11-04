@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import logo from "/GPM-LOGO-2021.png";
+import { API_BASE_URL } from "../src/config";
 
 const Student = ({ onLogout }) => {
   const [studentData, setStudentData] = useState(null);
@@ -9,7 +10,6 @@ const Student = ({ onLogout }) => {
   const [showPage, setShowPage] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const API_BASE_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
 
   useEffect(() => {

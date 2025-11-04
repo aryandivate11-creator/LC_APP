@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../src/config";
 
 export default function LoginPage({ onLogin }) {
   const [activeTab, setActiveTab] = useState("student");
@@ -24,8 +25,6 @@ export default function LoginPage({ onLogin }) {
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const API_BASE_URL = "http://localhost:5000/api";
 
   const handleInputChange = (e) => {
     setFormData({

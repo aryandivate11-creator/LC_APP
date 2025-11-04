@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import LeavingCertificate from "./LeavingCertificate";
+import { API_BASE_URL } from "../src/config";
 
 const AdminDashboard = ({ onLogout }) => {
   const [students, setStudents] = useState([]);
@@ -21,9 +22,6 @@ const AdminDashboard = ({ onLogout }) => {
     localStorage.setItem("dashboardStats", JSON.stringify(updatedStats));
   };
   
-  
-
-  const API_BASE_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
 
 
