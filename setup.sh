@@ -42,7 +42,7 @@ echo "✅ Backend setup complete!"
 # Setup Frontend
 echo ""
 echo "📦 Setting up Frontend..."
-cd ../Front-End/vite-project
+cd ../Front-End
 
 # Install frontend dependencies
 echo "Installing frontend dependencies..."
@@ -60,7 +60,7 @@ echo "   cd Backend"
 echo "   npm run dev"
 echo ""
 echo "2. Start the frontend server (in a new terminal):"
-echo "   cd Front-End/vite-project"
+echo "   cd Front-End"
 echo "   npm run dev"
 echo ""
 echo "3. Open your browser and go to: http://localhost:5173"

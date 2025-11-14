@@ -18,7 +18,7 @@ This guide will help you deploy the frontend to Vercel.
 
 2. **Navigate to the frontend directory**:
    ```bash
-   cd Front-End/vite-project
+   cd Front-End
    ```
 
 3. **Login to Vercel**:
@@ -32,7 +32,7 @@ This guide will help you deploy the frontend to Vercel.
    ```
 
 5. **During deployment, you'll be prompted**:
-   - Set the **Root Directory** to: `Front-End/vite-project` (or just `./` if already in that directory)
+   - Set the **Root Directory** to: `Front-End` (or just `./` if already in that directory)
    - Set **Environment Variable**: 
      - Name: `VITE_API_BASE_URL`
      - Value: `https://lc-app-1wte.onrender.com/api`
@@ -49,7 +49,7 @@ This guide will help you deploy the frontend to Vercel.
 
 5. **Configure the project**:
    - **Framework Preset**: Vite
-   - **Root Directory**: `Front-End/vite-project`
+   - **Root Directory**: `Front-End`
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
    - **Install Command**: `npm install`
