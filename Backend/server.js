@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
-    'https://lc-app-neon.vercel.app/', // Replace with actual Vercel URL
+    'https://lc-app-iota.vercel.app', // Replace with actual Vercel URL
     'http://localhost:5173' // Keep for local development
   ],
 }));
