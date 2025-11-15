@@ -15,7 +15,7 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
     nationality: student?.nationality || student?.personalDetails?.nationality || 'Indian',
     placeOfBirth: student?.placeOfBirth || student?.personalDetails?.placeOfBirth || 'Mumbai',
     dateOfBirth: student?.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : (student?.personalDetails?.dateOfBirth ? new Date(student.personalDetails.dateOfBirth).toISOString().split('T')[0] : ''),
-    instituteLastAttended: student?.instituteLastAttended || student?.personalDetails?.instituteLastAttended || 'ABC High School, Mumbai',
+    instituteLastAttended: student?.instituteLastAttended || student?.personalDetails?.instituteLastAttended,
     dateOfAdmission: student?.dateOfAdmission ? new Date(student.dateOfAdmission).toISOString().split('T')[0] : (student?.personalDetails?.dateOfAdmission ? new Date(student.personalDetails.dateOfAdmission).toISOString().split('T')[0] : ''),
     branch: student?.branch || 'Diploma in Information Technology',
     classAndYear: student?.classAndYear || student?.year || 'Third Year',
@@ -27,6 +27,38 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
 
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Sync certificateData when student prop changes (only on mount or when different student is selected)
+  useEffect(() => {
+    if (student) {
+      setCertificateData(prev => {
+        // Only update if the enrollment number changed (new student selected)
+        // This prevents resetting user edits when editing the same student
+        if (!prev.enrollmentNumber || prev.enrollmentNumber !== student?.enrollmentNumber) {
+          return {
+            enrollmentNumber: student?.enrollmentNumber || '',
+            name: student?.name || '',
+            motherName: student?.motherName || '',
+            religion: student?.religion || student?.personalDetails?.religion || 'Hindu',
+            caste: student?.caste || student?.personalDetails?.caste || 'OBC',
+            motherTongue: student?.motherTongue || student?.personalDetails?.motherTongue || 'Gujarati',
+            nationality: student?.nationality || student?.personalDetails?.nationality || 'Indian',
+            placeOfBirth: student?.placeOfBirth || student?.personalDetails?.placeOfBirth || 'Mumbai',
+            dateOfBirth: student?.dateOfBirth ? new Date(student.dateOfBirth).toISOString().split('T')[0] : (student?.personalDetails?.dateOfBirth ? new Date(student.personalDetails.dateOfBirth).toISOString().split('T')[0] : ''),
+            instituteLastAttended: student?.instituteLastAttended || student?.personalDetails?.instituteLastAttended || 'ABC High School, Mumbai',
+            dateOfAdmission: student?.dateOfAdmission ? new Date(student.dateOfAdmission).toISOString().split('T')[0] : (student?.personalDetails?.dateOfAdmission ? new Date(student.personalDetails.dateOfAdmission).toISOString().split('T')[0] : ''),
+            branch: student?.branch || 'Diploma in Information Technology',
+            classAndYear: student?.classAndYear || student?.year || 'Third Year',
+            conduct: student?.personalDetails?.conduct || 'Very Good',
+            reasonForLeaving: student?.personalDetails?.reasonForLeaving || 'Completion of Course',
+            remarks: student?.personalDetails?.remarks || 'Good Academic Record',
+            dateOfLeaving: new Date().toISOString().split('T')[0]
+          };
+        }
+        return prev;
+      });
+    }
+  }, [student?.enrollmentNumber]);
 
   const handleInputChange = (field, value) => {
     setCertificateData(prev => ({
@@ -91,6 +123,80 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
     return `${dayNames[day] || day} ${month} ${yearWords[year] || year}`;
   };
 
+  // Generate certificate HTML from certificateData
+  const generateCertificateHTML = () => {
+    return `
+      <div class="certificate-print bg-white p-4 sm:p-6 md:p-8 max-w-4xl mx-auto shadow-lg" style="min-height: 297mm;">
+        <!-- Top Header with Logo -->
+        <div class="text-center mb-3 sm:mb-4">
+          <div class="flex justify-center items-center mb-2 sm:mb-3">
+            <img 
+              src="/GPM-LOGO-2021.png" 
+              alt="GPM Logo" 
+              class="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 object-contain"
+            />
+          </div>
+          <p class="text-xs sm:text-sm font-semibold text-gray-800 mb-2">MAKING KNOWLEDGE TO WORK</p>
+        </div>
+
+        <!-- Institute Info -->
+        <div class="text-center mb-6 sm:mb-8">
+          <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-2">GOVERNMENT POLYTECHNIC MUMBAI</h2>
+          <p class="text-base sm:text-lg text-gray-700 mb-1">शासकीय तंत्रनिकेतन मुंबई</p>
+          <p class="text-xs sm:text-sm text-gray-600 mb-2 px-2">49, KHERWADI, ALI YAWAK JUNG MARG, BANDRA (EAST), MUMBAI-400 051</p>
+          <p class="text-xs sm:text-sm text-gray-600 mb-1">(Autonomous status granted by Govt. of Maharashtra)</p>
+          <p class="text-xs sm:text-sm text-gray-600">(Approved by AICTE, New Delhi and Equivalent to MSBTE, Mumbai)</p>
+        </div>
+
+        <!-- Enrollment and Date -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 sm:mb-6">
+          <div>
+            <p class="text-xs sm:text-sm text-gray-700 font-semibold">ENROLLMENT NO.: ${certificateData.enrollmentNumber}</p>
+          </div>
+          <div>
+            <p class="text-xs sm:text-sm text-gray-700">Date: ${formatDate(certificateData.dateOfLeaving)}</p>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="text-center mb-4 sm:mb-6">
+          <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">LEAVING CERTIFICATE</h1>
+          <p class="text-xs sm:text-sm text-gray-600 mb-2">ORIGINAL COPY</p>
+          <p class="text-xs sm:text-sm text-gray-700 px-2">
+            Certified that the following information is in accordance with the Institute Records:
+          </p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="mb-6 sm:mb-8">
+          <div class="space-y-2 text-xs sm:text-sm text-gray-700">
+            <p><span class="font-semibold">1. Registered Number of Candidate:</span> ${certificateData.enrollmentNumber}</p>
+            <p><span class="font-semibold">2. Name of the Candidate (in full):</span> ${certificateData.name}</p>
+            <p><span class="font-semibold">3. Mother Name:</span> ${certificateData.motherName}</p>
+            <p><span class="font-semibold">4. Religion:</span> ${certificateData.religion}</p>
+            <p><span class="font-semibold">5. Caste & SubCaste:</span> ${certificateData.caste}</p>
+            <p><span class="font-semibold">6. Mother Tongue:</span> ${certificateData.motherTongue}</p>
+            <p><span class="font-semibold">7. Nationality:</span> ${certificateData.nationality}</p>
+            <p><span class="font-semibold">8. Place of Birth:</span> ${certificateData.placeOfBirth}</p>
+            <p><span class="font-semibold">9. Date of Birth:</span> ${formatDate(certificateData.dateOfBirth)}</p>
+            <p class="ml-4 text-xs text-gray-600">According to the Christian era (in words): ${formatDateInWords(certificateData.dateOfBirth)}</p>
+            <p><span class="font-semibold">10. Institute Last Attended:</span> ${certificateData.instituteLastAttended}</p>
+            <p><span class="font-semibold">11. Date of Admission:</span> ${formatDate(certificateData.dateOfAdmission)}</p>
+            <p><span class="font-semibold">12. Branch/Class & Year in which Admitted:</span> ${certificateData.branch} - ${certificateData.classAndYear}</p>
+            <p><span class="font-semibold">13. Conduct:</span> ${certificateData.conduct}</p>
+            <p><span class="font-semibold">14. Reason for leaving Institute:</span> ${certificateData.reasonForLeaving}</p>
+            <p><span class="font-semibold">15. Remarks:</span> ${certificateData.remarks}</p>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-right">
+          <p class="text-sm text-gray-500">1/2</p>
+        </div>
+      </div>
+    `;
+  };
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     try {
@@ -99,12 +205,13 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
       // Open certificate in a new window
       const printWindow = window.open('', '_blank');
       if (printWindow) {
-        const contentHTML = document.querySelector('.certificate-print').outerHTML;
+        const contentHTML = generateCertificateHTML();
         printWindow.document.write(`
           <!DOCTYPE html>
           <html>
             <head>
               <title>Leaving Certificate - ${certificateData.enrollmentNumber}</title>
+              <script src="https://cdn.tailwindcss.com"></script>
               <link rel="stylesheet" href="/src/print.css">
               <style>
                 body {
@@ -179,21 +286,17 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
   const handlePrint = () => {
     // Create a new window for printing with logo
     const printWindow = window.open('', '_blank');
-    const printContent = document.querySelector('.certificate-print');
     
-    if (printWindow && printContent) {
-      // Get the logo source (absolute URL)
-      const logoImg = printContent.querySelector('img');
-      const logoSrc = logoImg ? logoImg.src : '/GPM-LOGO-2021.png';
-      
-      // Clone the content and ensure logo is included
-      const contentHTML = printContent.innerHTML;
+    if (printWindow) {
+      // Generate HTML from current certificateData
+      const contentHTML = generateCertificateHTML();
       
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
             <title>Leaving Certificate - ${certificateData.enrollmentNumber || 'GPM'}</title>
+            <script src="https://cdn.tailwindcss.com"></script>
             <style>
               @page {
                 size: A4;
@@ -245,9 +348,7 @@ const LeavingCertificate = ({ student, onClose, onSave, isEdit = false }) => {
             <link rel="stylesheet" href="/src/print.css">
           </head>
           <body>
-            <div class="certificate-print">
-              ${contentHTML}
-            </div>
+            ${contentHTML}
             <div class="no-print" style="text-align: center; margin-top: 20px; padding: 20px;">
               <button onclick="window.print()" style="padding: 12px 24px; background: #0d9488; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; font-size: 16px;">🖨️ Print Certificate</button>
               <button onclick="window.close()" style="padding: 12px 24px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">❌ Close</button>

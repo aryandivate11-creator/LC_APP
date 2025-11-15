@@ -3,21 +3,20 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 
-// Middleware
+
 app.use(cors({
   origin: [
-    'https://lc-app-iota.vercel.app', // Replace with actual Vercel URL
-    'http://localhost:5173' // Keep for local development
-  ],
+    'https://gpm-e-lc-portal.vercel.app/',
+    'http://localhost:5173' ],
 }));
 
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
 // Routes

@@ -288,6 +288,8 @@ router.post('/students/:id/generate-certificate', verifyAdminToken, [
     if (certificateData.motherTongue) student.motherTongue = certificateData.motherTongue;
     if (certificateData.branch) student.branch = certificateData.branch;
     if (certificateData.classAndYear) student.classAndYear = certificateData.classAndYear;
+    if (certificateData.instituteLastAttended) student.instituteLastAttended = certificateData.instituteLastAttended;
+    if (certificateData.dateOfAdmission) student.dateOfAdmission = new Date(certificateData.dateOfAdmission);
 
     await student.save();
 
