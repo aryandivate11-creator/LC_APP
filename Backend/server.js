@@ -10,7 +10,7 @@ const app = express();
 
 app.use(cors({
   origin: [
-    'https://gpm-e-lc-portal.vercel.app/',
+    'https://gpm-e-lc-portal.vercel.app',
     'http://localhost:5173' ],
 }));
 
